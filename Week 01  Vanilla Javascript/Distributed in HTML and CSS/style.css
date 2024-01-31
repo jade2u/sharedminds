@@ -1,3 +1,7 @@
+body {
+    padding: 2em;
+}
+
 /* Set the canvas to fill the screen */
 #myCanvas {
     position: absolute;
@@ -11,7 +15,6 @@
 /* Center the input box towards the bottom of the screen */
 #inputBox {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 75%;
+    width: 50%;
 }
