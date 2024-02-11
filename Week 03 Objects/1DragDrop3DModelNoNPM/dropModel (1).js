@@ -1,12 +1,27 @@
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
-//import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js'
-import { DragControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/DragControls.js';
+//Notice import map in html //import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 let camera, scene, renderer;
-let dragControls;
-let objects = [];
+let thingsThatNeedUpdating = [];
+let thingsThatNeedSpinning = [];
 initHTML();
 init3D();
 
+
+// Create a new GLTFLoader instance to load the 3D model
+const loader = new GLTFLoader();
+// Function to load and add a duck to the scene
+function creatNewModel(file, pos) {
+
+    loader.load(file, function (gltf) {
+        const model = gltf.scene;
+        model.scale.set(5, 5, 5);
+        model.position.set(pos.x, pos.y, pos.z);
+        scene.add(model);
+        thingsThatNeedSpinning.push(model);
+    });
+}
 
 
 function init3D() {
@@ -25,18 +40,30 @@ function init3D() {
     bgGeometery.scale(-1, 1, 1);
     // has to be power of 2 like (4096 x 2048) or(8192x4096).  i think it goes upside down because texture is not right size
     let panotexture = new THREE.TextureLoader().load("itp.jpg");
-    // var material = new THREE.MeshBasicMaterial({ map: panotexture, transparent: true,   alphaTest: 0.02,opacity: 0.3});
+    // let material = new THREE.MeshBasicMaterial({ map: panotexture, transparent: true,   alphaTest: 0.02,opacity: 0.3});
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
 
+    let ambientLight = new THREE.AmbientLight(new THREE.Color('hsl(0, 0%, 100%)'), 0.75);
+    scene.add(ambientLight);
+
+
     moveCameraWithMouse();
-    dragControls = new DragControls(objects, camera, renderer.domElement);
+
     camera.position.z = 0;
     animate();
+
 }
 
 function animate() {
+    for (let i = 0; i < thingsThatNeedUpdating.length; i++) {
+        thingsThatNeedUpdating[i].texture.needsUpdate = true;
+    }
+    for (let i = 0; i < thingsThatNeedSpinning.length; i++) {
+        thingsThatNeedSpinning[i].rotation.y += 0.01;
+        thingsThatNeedSpinning[i].rotation.x += 0.01;
+    }
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
 }
@@ -82,26 +109,34 @@ function initHTML() {
         e.preventDefault();
         const files = e.dataTransfer.files;
         for (let i = 0; i < files.length; i++) {
-            if (!files[i].type.match("image")) continue;
-            // Process the dropped image file here
-            console.log("Dropped image file:", files[i]);
+            if (files[i].type.match("image")) {
+                // Process the dropped image file here
+                console.log("Dropped image file:", files[i]);
 
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const img = new Image();
-                img.onload = function () {
-                    let mouse = { x: e.clientX, y: e.clientY };
-                    const pos = find3DCoornatesInFrontOfCamera(100, mouse);
-                    createNewImage(img, pos, files[i]);
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.onload = function () {
+                        let mouse = { x: e.clientX, y: e.clientY };
+                        const pos = find3DCoornatesInFrontOfCamera(150 - camera.fov, mouse);
+                        createNewImage(img, pos, files[i]);
+                    };
+                    img.src = event.target.result;
                 };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(files[i]);
+                reader.readAsDataURL(files[i]);
+            } else if (files[i].name.match(/\.glb/)) {
+                console.log("Dropped 3d file:", files[i]);
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    let mouse = { x: e.clientX, y: e.clientY };
+                    const pos = find3DCoornatesInFrontOfCamera(150 - camera.fov, mouse);
+                    creatNewModel(event.target.result, pos);
+                };
+                reader.readAsDataURL(files[i]);
+            }
+
         }
     }, true);
-
-
-
 }
 
 function find3DCoornatesInFrontOfCamera(distance, mouse) {
@@ -117,24 +152,27 @@ function find3DCoornatesInFrontOfCamera(distance, mouse) {
     return vector;
 }
 
+
+
+
 function createNewImage(img, posInWorld, file) {
 
     console.log("Created New Text", posInWorld);
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.width = img.width;
     canvas.height = img.height;
-    var context = canvas.getContext("2d");
+    let context = canvas.getContext("2d");
     context.drawImage(img, 0, 0);
-    var fontSize = Math.max(12);
+    let fontSize = Math.max(12);
     context.font = fontSize + "pt Arial";
     context.textAlign = "center";
     context.fillStyle = "red";
     context.fillText(file.name, canvas.width / 2, canvas.height - 30);
-    var textTexture = new THREE.Texture(canvas);
-    textTexture.needsUpdate = true;
-    var material = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-    var geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
-    var mesh = new THREE.Mesh(geo, material);
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    let geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
+    let mesh = new THREE.Mesh(geo, material);
 
     mesh.position.x = posInWorld.x;
     mesh.position.y = posInWorld.y;
@@ -144,27 +182,27 @@ function createNewImage(img, posInWorld, file) {
     mesh.lookAt(0, 0, 0);
     mesh.scale.set(10, 10, 10);
     scene.add(mesh);
-    objects.push(mesh);
 }
+
 
 function createNewText(text_msg, posInWorld) {
 
     console.log("Created New Text", posInWorld);
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;
-    var context = canvas.getContext("2d");
+    let context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
-    var fontSize = Math.max(camera.fov / 2, 72);
+    let fontSize = Math.max(camera.fov / 2, 72);
     context.font = fontSize + "pt Arial";
     context.textAlign = "center";
     context.fillStyle = "red";
     context.fillText(text_msg, canvas.width / 2, canvas.height / 2);
-    var textTexture = new THREE.Texture(canvas);
+    let textTexture = new THREE.Texture(canvas);
     textTexture.needsUpdate = true;
-    var material = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-    var geo = new THREE.PlaneGeometry(1, 1);
-    var mesh = new THREE.Mesh(geo, material);
+    let material = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
+    let geo = new THREE.PlaneGeometry(1, 1);
+    let mesh = new THREE.Mesh(geo, material);
 
     mesh.position.x = posInWorld.x;
     mesh.position.y = posInWorld.y;
@@ -174,8 +212,90 @@ function createNewText(text_msg, posInWorld) {
     mesh.lookAt(0, 0, 0);
     mesh.scale.set(10, 10, 10);
     scene.add(mesh);
-    objects.push(mesh);
 }
+
+function createP5Sketch(w, h) {
+    let sketch = function (p) {
+        let particles = [];
+        let myCanvas;
+        p.getCanvas = function () {
+            return myCanvas;
+        }
+        p.setup = function () {
+            myCanvas = p.createCanvas(w, h);
+
+        };
+        p.draw = function () {
+            p.clear();
+            for (let i = 0; i < 5; i++) {
+                let p = new Particle();
+                particles.push(p);
+            }
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].show();
+                if (particles[i].finished()) {
+                    // remove this particle
+                    particles.splice(i, 1);
+                }
+            }
+        };
+
+        class Particle {
+            constructor() {
+                this.x = p.width / 2;
+                this.y = p.height / 2;
+                this.vx = p.random(-1, 1);
+                this.vy = p.random(-4, 1);
+                this.alpha = 255;
+            }
+            finished() {
+                return this.alpha < 0;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 10;
+            }
+            show() {
+                p.noStroke();
+                p.fill(255, 0, 255, this.alpha);
+                p.ellipse(this.x, this.y, 5);
+            }
+        }
+    };
+    return new p5(sketch);
+}
+
+function addP5To3D(_x, _y) {  //called from double click
+
+    let newP5 = createP5Sketch(200, 200);
+    //pull the p5 canvas out of sketch 
+    //and then regular (elt) js canvas out of special p5 canvas
+    let p5Canvas = newP5.getCanvas();
+    let canvas = p5Canvas.elt;
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    let geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
+    let mesh = new THREE.Mesh(geo, material);
+
+    mesh.scale.set(10, 10, 10);
+
+    let mouse = { x: _x, y: _y };
+    console.log("camera fov", camera.fov);
+    const posInWorld = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
+    mesh.position.x = posInWorld.x;
+    mesh.position.y = posInWorld.y;
+    mesh.position.z = posInWorld.z;
+
+    mesh.lookAt(0, 0, 0);
+    scene.add(mesh);
+    let thisObject = { canvas: canvas, mesh: mesh, texture: texture, p5Canvas: p5Canvas };
+    thingsThatNeedUpdating.push(thisObject);
+}
+
+
 
 
 
@@ -194,9 +314,19 @@ function moveCameraWithMouse() {
     div3D.addEventListener('mousemove', div3DMouseMove, false);
     div3D.addEventListener('mouseup', div3DMouseUp, false);
     div3D.addEventListener('wheel', div3DMouseWheel, { passive: true });
+    //add double click listener
+    window.addEventListener('dblclick', div3DDoubleClick, false); // Add double click event listener
     window.addEventListener('resize', onWindowResize, false);
     //document.addEventListener('keydown', onDocumentKeyDown, false);
     camera.target = new THREE.Vector3(0, 0, 0);  //something for the camera to look at
+}
+
+function div3DDoubleClick(event) {
+    console.log('double click');
+    let mouse = { x: event.clientX, y: event.clientY };
+    const pos = find3DCoornatesInFrontOfCamera(150 - camera.fov, mouse);
+    creatNewModel('./Duck.glb', pos);
+    //addP5To3D(event.clientX, event.clientY);
 }
 
 function div3DMouseDown(event) {
@@ -206,7 +336,6 @@ function div3DMouseDown(event) {
     mouseDownLat = lat;
     isUserInteracting = true;
 }
-
 
 function div3DMouseMove(event) {
     if (isUserInteracting) {
