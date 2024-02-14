@@ -1,0 +1,21 @@
+#button {
+    background: rgb(196, 46, 46);
+    color: #FFE6F3;
+    border: none;
+    border-radius: 1em;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 150%;
+
+    display: block;
+    position: absolute;
+
+    padding: 1em;
+    bottom: 50px;
+    margin-left: 45%;
+    margin-right: 45%;
+}
+#button:hover {
+    cursor: pointer;
+    background: red;
+}
