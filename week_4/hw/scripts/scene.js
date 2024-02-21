@@ -1,10 +1,16 @@
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
+import * as FB from './firebase.js';
+import * as LANG from './language.js';
 
-let camera, scene, renderer;
+/* ----------- VARIABLES -----------*/
+//scene
+let camera, scene, renderer, lang_pos;
+const textbox = document.getElementById('textbox');
+//json
 let thingsThatNeedUpdating = [];
-
-const hello = document.getElementById('hello');
-
+let myObjectsByThreeID = {}; //convert three.js to JSON 
+let myObjectsByFirebaseKey = {}; //convert firebase key to JSON
+//mouse
 let mouseDownX = 0, mouseDownY = 0;
 let lon = -90, mouseDownLon = 0;
 let lat = 0, mouseDownLat = 0;
@@ -16,16 +22,32 @@ const static_material = new THREE.MeshBasicMaterial({opacity: 0, transparent: tr
 const mesh_static = new THREE.Mesh(static_geometry, static_material);
 mesh_static.position.set(-5,0,-5);
 
-
+//call functions
 initHTML();
 init3D();
+recall();
 
-/* ----------- SETUP -----------*/
+/* ----------- FIREBASE -----------*/
+export function reactToFirebase(reaction, data, key){
+    //add new text
+    if(reaction === "added"){
+        createNewText(data, key);
+        //console.log(reaction);
+    }
+    else if(reaction === "changed"){console.log(reaction);}
+    else if(reaction === "removed"){console.log(reaction);}
+}
+function recall() {
+    console.log("recall");
+    FB.subscribeToData('objects'); //get notified if anything changes in this folder
+}
+
+/* ----------- 3D -----------*/
 /// 3D SCENE
 function init3D() {
     //scene
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
     //renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -33,43 +55,24 @@ function init3D() {
     //bg
     let bgGeometery = new THREE.SphereGeometry(1000, 60, 40);
     bgGeometery.scale(-1, 1, 1);
+    scene.add(mesh_static);
     //pic
     let panotexture = new THREE.TextureLoader().load("map.png");
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
-    
     //move
     moveCameraWithMouse();
     camera.position.z = 0;
     animate();
-
-    scene.add(mesh_static);
-
 }
+/// ANIMATE
 function animate() {
     for (let i = 0; i < thingsThatNeedUpdating.length; i++) {
         thingsThatNeedUpdating[i].texture.needsUpdate = true;
     }
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
-}
-/// HTML
-function initHTML() {
-    // three.js format
-    const THREEcontainer = document.createElement("div");
-    THREEcontainer.setAttribute("id", "THREEcontainer");
-    document.body.appendChild(THREEcontainer);
-    THREEcontainer.style.position = "absolute";
-    THREEcontainer.style.top = "0";
-    THREEcontainer.style.left = "0";
-    THREEcontainer.style.width = "100%";
-    THREEcontainer.style.height = "100%";
-    THREEcontainer.style.zIndex = "1";
-
-    // change text
-    hello.innerHTML = 'hello';
-    hello.style.zIndex = "5";
 }
 /// 3D POSITION
 function find3DCoornatesInFrontOfCamera(distance, mouse) {
@@ -85,9 +88,37 @@ function find3DCoornatesInFrontOfCamera(distance, mouse) {
     return vector;
 }
 
+/* ----------- HTML -----------*/
+function initHTML() {
+    // three.js format
+    const THREEcontainer = document.createElement("div");
+    THREEcontainer.setAttribute("id", "THREEcontainer");
+    document.body.appendChild(THREEcontainer);
+    THREEcontainer.style.position = "absolute";
+    THREEcontainer.style.top = "0";
+    THREEcontainer.style.left = "0";
+    THREEcontainer.style.width = "100%";
+    THREEcontainer.style.height = "100%";
+    THREEcontainer.style.zIndex = "1";
 
-/* ----------- P5 -----------*/
-/// DRAW CIRCLE
+    // draw textbox
+    textbox.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { //when enter pressed
+            //get textbox location
+            const textboxRect = textbox.getBoundingClientRect();
+            const mouse = { x: textboxRect.right - (textboxRect.width / 2), y: textboxRect.top };
+            const pos = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
+            //add to firebase
+            const data = { type: "text", position: { x: pos.x, y: pos.y, z: pos.z }, text: textbox.value };
+            FB.addNewThingToFirebase("objects", data);
+            addP5To3D(mouse.x, mouse.y);
+        }
+    });
+}
+
+
+/* ----------- CIRCLE -----------*/
+/// NEW P5
 function createP5Sketch(w, h) {
     let sketch = function (p) {
         let myCanvas;
@@ -103,15 +134,14 @@ function createP5Sketch(w, h) {
             this.y = p.height / 2;
             this.alpha = 255;
             p.noStroke();
-            p.fill(255, 0, 0, 10);
+            p.fill(0, 255, 0, 10);
             p.ellipse(this.x, this.y, 5);
-  
         };
     };
     return new p5(sketch);
 }
 
-/// ADD SKETCH TO 3D
+/// ADD P5 TO 3D
 function addP5To3D(_x, _y) {
     let newP5 = createP5Sketch(200, 200);
     let p5Canvas = newP5.getCanvas(); //pull the p5 canvas out of sketch 
@@ -135,34 +165,64 @@ function addP5To3D(_x, _y) {
     let thisObject = { canvas: canvas, mesh: mesh, texture: texture, p5Canvas: p5Canvas };
     thingsThatNeedUpdating.push(thisObject);
 
-    matchLanguage(mesh.getWorldPosition(mesh_static.position));
+    //console.log(mesh.getWorldPosition(mesh_static.position))
 }
 
-/// LANGUAGES
-function matchLanguage(pos){
-    console.log(pos);
-    
-    /// S AM
-    //spanish
-    if((pos.x<3.4 && pos.x>-5.6) && (pos.y<4.8 && pos.y>-5.52)){
-        //portugese
-        if(pos.x<-1.78 && (pos.y<0.57 && pos.y>-3.54)){hello.innerHTML = "olá";}
-        else {hello.innerHTML = "hola"};
+/* ----------- TEXT -----------*/
+/// NEW 
+function createNewText(data, firebaseKey) {
+    // canvas
+    let canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 512;
+    //material
+    let texture = new THREE.Texture(canvas);
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide, alphaTest: 0.5 });
+    let geo = new THREE.PlaneGeometry(1, 1);
+    let mesh = new THREE.Mesh(geo, material);
+    mesh.lookAt(0, 0, 0);
+    mesh.scale.set(10, 10, 10);
+    scene.add(mesh);
+    let text_msg = data.text;
+    let posInWorld = data.position;
+    //add to firebase
+    let thisObject = { type: "text", firebaseKey: firebaseKey, threeID: mesh.uuid, text: text_msg, position: posInWorld, canvas: canvas, mesh: mesh, texture: texture };
+    myObjectsByThreeID[mesh.uuid] = thisObject;
+    myObjectsByFirebaseKey[firebaseKey] = thisObject;
+    //draw
+    redrawText(thisObject);
 
-        //jamaica
-        if((pos.x<-1.3 && pos.x>-1.5) && (pos.y<2.1 && pos.y>1.9)){hello.innerHTML = "waa gwaan";}
-    }
+}
+/// ADD TO 3D
+function redrawText(thisObject) {
+    //position
+    thisObject.mesh.position.x = thisObject.position.x;
+    thisObject.mesh.position.y = thisObject.position.y;
+    thisObject.mesh.position.z = thisObject.position.z;
+    thisObject.mesh.lookAt(0, 0, 0);
+    //find language
+    let new_lang = LANG.matchLanguage(thisObject.mesh.getWorldPosition(mesh_static.position))
+    //translate
+    LANG.translate(thisObject.text, new_lang)
+    .then(translatedText => {
+        //draw text
+        let canvas = thisObject.canvas;
+        let context = canvas.getContext("2d");
+        thisObject.texture.needsUpdate = true;
 
-    
-    
-    /// N AM
-    //english
-    if((pos.x<3 && pos.x>-3) && (pos.y<8.1 && pos.y>2.7)){hello.innerHTML = "hello";}
-    //hawaiian
-    if((pos.x<5.6 && pos.x>5.3) && (pos.y<2.4 && pos.y>2.1)){hello.innerHTML = "aloha";}
-    
-    
-    
+        console.log(translatedText);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        let fontSize = Math.max(camera.fov / 10, 15);
+        context.font = fontSize + "pt Arial";
+        context.textAlign = "center";
+        context.fillStyle = "red";
+        context.fillText(translatedText, canvas.width / 2, canvas.height / 2);
+    })
+    /*
+    .catch(error => {
+        console.error(error);
+    });
+    */
 }
 
 
@@ -179,11 +239,9 @@ function moveCameraWithMouse() {
 
     camera.target = new THREE.Vector3(0, 0, 0);  //something for the camera to look at
 }
-/// PARTICLE DOUBLE CLICK
+/// DOUBLE CLICK
 function div3DDoubleClick(event) {
     addP5To3D(event.clientX, event.clientY);
-
-     
 }
 /// CLICK
 function div3DMouseDown(event) {
@@ -201,10 +259,6 @@ function div3DMouseUp(event) {
 }
 /// MOVE
 function div3DMouseMove(event) {
-    //text
-    hello.style.top = event.clientY + "px";
-    hello.style.left = (event.clientX + 20) + "px";
-
     //when clicked
     if (isUserInteracting) {
         lon = (mouseDownX - event.clientX) * 0.1 + mouseDownLon;
@@ -220,8 +274,8 @@ function div3DMouseWheel(event) {
 }
 /// ORIENTATION
 function computeCameraOrientation() {
-    lat = Math.max(- 30, Math.min(30, lat));  //restrict movement
-    let phi = THREE.MathUtils.degToRad(90 - lat);  //restrict movement
+    lat = Math.max(- 30, Math.min(90, lat));  //restrict movement
+    let phi = THREE.MathUtils.degToRad(100 - lat);  //restrict movement
     let theta = THREE.MathUtils.degToRad(lon);
     //move the target that the camera is looking at
     camera.target.x = 100 * Math.sin(phi) * Math.cos(theta);
@@ -236,4 +290,5 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     console.log('Resized');
 }
+
 

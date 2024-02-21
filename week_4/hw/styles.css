@@ -1,12 +1,13 @@
+#textbox {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 1em;
+    font-size: 1em;
+    text-align: center;
 
-
-#hello {
-    padding-left: 10px;
-    border-radius: 10px;
     position: absolute;
-    user-select: none;
-    font-size: 2em;
-    width: fit-content;
-    color: #EEEEEE;
-    background-color: #FD7013;
+    width: min-content;
+    padding: 5px;
+    z-index: 5;
+    top: 50%;
+    left: 40%;
 }
