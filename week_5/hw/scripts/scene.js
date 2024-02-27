@@ -1,10 +1,10 @@
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
+import * as THREE from 'three';
 import * as FB from './firebase.js';
 import * as LANG from './language.js';
 
 /* ----------- VARIABLES -----------*/
 //scene
-let camera, scene, renderer, lang_pos;
+let camera, scene, scene_screen, renderer;
 const textbox = document.getElementById('textbox');
 //json
 let thingsThatNeedUpdating = [];
@@ -47,8 +47,9 @@ function recall() {
 function init3D() {
     //scene
     scene = new THREE.Scene();
+    scene_screen = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
-    //renderer
+    //inital renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('THREEcontainer').appendChild(renderer.domElement);
@@ -61,6 +62,18 @@ function init3D() {
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
+
+    let planeMesh;
+    //load texture and initialize planeMesh, textureData and renderTargetTexture
+    new THREE.TextureLoader().load("map.png", function (texture) {
+        planeMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(texture.image.width, texture.image.height),
+        new THREE.MeshBasicMaterial({ map: texture })
+        );
+    })
+
+    scene.add(planeMesh);
+
     //move
     moveCameraWithMouse();
     camera.position.z = 0;
@@ -100,7 +113,7 @@ function initHTML() {
     THREEcontainer.style.width = "100%";
     THREEcontainer.style.height = "100%";
     THREEcontainer.style.zIndex = "1";
-
+    
     // draw textbox
     textbox.addEventListener("keydown", function (e) {
         if (e.key === "Enter") { //when enter pressed
@@ -108,14 +121,60 @@ function initHTML() {
             const textboxRect = textbox.getBoundingClientRect();
             const mouse = { x: textboxRect.right - (textboxRect.width / 2), y: textboxRect.top };
             const pos = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
+            console.log(pos);
+            colorCast(mouse);
+            /*
             //add to firebase
             const data = { type: "text", position: { x: pos.x, y: pos.y, z: pos.z }, text: textbox.value };
             FB.addNewThingToFirebase("objects", data);
+            */
+            //draw circle & new text
             addP5To3D(mouse.x, mouse.y);
         }
     });
 }
+/* ----------- RAYCASTER -----------*/
+function colorCast(pos){
+    //setup raycaster & plane mesh
+    let rayCaster = new THREE.Raycaster();
+    rayCaster.setFromCamera(pos, camera);
+    let plane_mesh;
+    scene.traverse(function(object) {
+        if (object.isMesh && (object.geometry.type=="PlaneGeometry")){plane_mesh = object};
+    });
 
+    //get cords in window
+    let mouse = new THREE.Vector2();
+    mouse.x =((pos.x-renderer.domElement.offsetLeft)/renderer.domElement.width)*2-1;
+    mouse.y =-((pos.y-renderer.domElement.offsetTop)/renderer.domElement.height)*2+1;
+    mouse.x=parseInt(window.innerWidth/2+mouse.x*window.innerWidth/2);
+    mouse.y=parseInt(window.innerHeight/2+mouse.y*window.innerHeight/2);
+
+    //render stuff
+    let renderTargetTexture = new THREE.WebGLRenderTarget(
+        window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType }
+    );
+    const materialScreen = new THREE.ShaderMaterial({
+        uniforms: { 'tDiffuse': { value: renderTargetTexture.texture } },
+        vertexShader: document.getElementById( 'vertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'fragment_shader_screen' ).textContent,
+        depthWrite: false
+    });
+
+    renderer.clear();
+    renderer.setRenderTarget(renderTargetTexture);
+    renderer.clear();
+    renderer.render(scene,camera);
+    renderer.setRenderTarget(null);
+    renderer.render(scene_screen,camera);
+    //read pixels to rgb
+    const read=new Float32Array(4);
+    renderer.readRenderTargetPixels(renderTargetTexture,pos.x,pos.y,1,1,read);
+    let r=parseInt(read[0]*255);
+    let g=parseInt(read[1]*255);
+    let b=parseInt(read[2]*255);
+    console.log("X:"+pos.x+" Y:"+pos.y+" RGB: ["+r+","+g+","+b+"] Color: %c     ","background:rgb("+r+","+g+","+b+");");
+}
 
 /* ----------- CIRCLE -----------*/
 /// NEW P5
@@ -218,11 +277,6 @@ function redrawText(thisObject) {
         context.fillStyle = "red";
         context.fillText(translatedText, canvas.width / 2, canvas.height / 2);
     })
-    /*
-    .catch(error => {
-        console.error(error);
-    });
-    */
 }
 
 
@@ -252,6 +306,7 @@ function div3DMouseDown(event) {
     mouseDownLat = lat;
 
     isUserInteracting = true;
+
 }
 /// DRAG
 function div3DMouseUp(event) {

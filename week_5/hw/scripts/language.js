@@ -38,6 +38,8 @@ export async function translate(input, lang) {
 export function matchLanguage(pos){
     //console.log(pos);
     let new_lang;
+    
+    /*
     ///S AM
     //spanish
     if((pos.x<3.4 && pos.x>-5.6) && (pos.y<4.8 && pos.y>-5.52)){
@@ -58,6 +60,7 @@ export function matchLanguage(pos){
 
     
     return new_lang;
+    */
 }
 
 var language = {
