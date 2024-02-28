@@ -33,11 +33,18 @@
 </head>
 
 <body>
-    <input id="textbox" placeholder="Enter text here"></input>
+    <h2>GUESS THE WORD <br> <em>HINT: think<em></h2>
+    <h1>Ingqondo</h1>
+    <input id="textbox"></input>
     
+    <script>
+        let textbox = document.getElementById('textbox');
+        let username = localStorage.getItem("username");
+        textbox.setAttribute('placeholder', username + " says...");
+        //console.log(localStorage.getItem("username"));
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
-
     <script src="scripts/language.js" type="module"></script>
     <script src="scripts/scene.js" type="module"></script>
     <script src="scripts/firebase.js" type="module"></script>

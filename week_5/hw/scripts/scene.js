@@ -4,12 +4,13 @@ import * as LANG from './language.js';
 
 /* ----------- VARIABLES -----------*/
 //scene
-let camera, scene, scene_screen, renderer;
+let camera, scene, scene_screen, renderer, color;
 const textbox = document.getElementById('textbox');
 //json
 let thingsThatNeedUpdating = [];
 let myObjectsByThreeID = {}; //convert three.js to JSON 
 let myObjectsByFirebaseKey = {}; //convert firebase key to JSON
+let new_lang;
 //mouse
 let mouseDownX = 0, mouseDownY = 0;
 let lon = -90, mouseDownLon = 0;
@@ -32,13 +33,12 @@ export function reactToFirebase(reaction, data, key){
     //add new text
     if(reaction === "added"){
         createNewText(data, key);
-        //console.log(reaction);
     }
     else if(reaction === "changed"){console.log(reaction);}
     else if(reaction === "removed"){console.log(reaction);}
 }
 function recall() {
-    console.log("recall");
+    //console.log("recall");
     FB.subscribeToData('objects'); //get notified if anything changes in this folder
 }
 
@@ -121,15 +121,19 @@ function initHTML() {
             const textboxRect = textbox.getBoundingClientRect();
             const mouse = { x: textboxRect.right - (textboxRect.width / 2), y: textboxRect.top };
             const pos = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
-            console.log(pos);
+
+            //get translated text
             colorCast(mouse);
-            /*
-            //add to firebase
-            const data = { type: "text", position: { x: pos.x, y: pos.y, z: pos.z }, text: textbox.value };
-            FB.addNewThingToFirebase("objects", data);
-            */
+
+            LANG.translate(textbox.value, new_lang)
+            .then(translatedText => {
+                //add translated to firebase
+                const data = { type: "text", position: { x: pos.x, y: pos.y, z: pos.z }, text: translatedText };
+                FB.addNewThingToFirebase("objects", data);
+            })
+            
             //draw circle & new text
-            addP5To3D(mouse.x, mouse.y);
+            //addP5To3D(mouse.x, mouse.y);
         }
     });
 }
@@ -173,10 +177,14 @@ function colorCast(pos){
     let r=parseInt(read[0]*255);
     let g=parseInt(read[1]*255);
     let b=parseInt(read[2]*255);
-    console.log("X:"+pos.x+" Y:"+pos.y+" RGB: ["+r+","+g+","+b+"] Color: %c     ","background:rgb("+r+","+g+","+b+");");
+    let map_color = "("+r+","+g+","+b+")";
+    
+    new_lang = LANG.matchLanguage('color', map_color);
+
+    console.log("color: " + map_color);
 }
 
-/* ----------- CIRCLE -----------*/
+/* ----------- CIRCLE -----------
 /// NEW P5
 function createP5Sketch(w, h) {
     let sketch = function (p) {
@@ -193,8 +201,8 @@ function createP5Sketch(w, h) {
             this.y = p.height / 2;
             this.alpha = 255;
             p.noStroke();
-            p.fill(0, 255, 0, 10);
-            p.ellipse(this.x, this.y, 5);
+            p.fill(0, 0, 0, 10);
+            p.ellipse(this.x, this.y, 2);
         };
     };
     return new p5(sketch);
@@ -223,10 +231,8 @@ function addP5To3D(_x, _y) {
 
     let thisObject = { canvas: canvas, mesh: mesh, texture: texture, p5Canvas: p5Canvas };
     thingsThatNeedUpdating.push(thisObject);
-
-    //console.log(mesh.getWorldPosition(mesh_static.position))
 }
-
+*/
 /* ----------- TEXT -----------*/
 /// NEW 
 function createNewText(data, firebaseKey) {
@@ -254,29 +260,27 @@ function createNewText(data, firebaseKey) {
 }
 /// ADD TO 3D
 function redrawText(thisObject) {
+    console.log(thisObject.text)
     //position
     thisObject.mesh.position.x = thisObject.position.x;
     thisObject.mesh.position.y = thisObject.position.y;
     thisObject.mesh.position.z = thisObject.position.z;
     thisObject.mesh.lookAt(0, 0, 0);
-    //find language
-    let new_lang = LANG.matchLanguage(thisObject.mesh.getWorldPosition(mesh_static.position))
-    //translate
-    LANG.translate(thisObject.text, new_lang)
-    .then(translatedText => {
-        //draw text
-        let canvas = thisObject.canvas;
-        let context = canvas.getContext("2d");
-        thisObject.texture.needsUpdate = true;
 
-        console.log(translatedText);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        let fontSize = Math.max(camera.fov / 10, 15);
-        context.font = fontSize + "pt Arial";
-        context.textAlign = "center";
-        context.fillStyle = "red";
-        context.fillText(translatedText, canvas.width / 2, canvas.height / 2);
-    })
+    let canvas = thisObject.canvas;
+    let context = canvas.getContext("2d");
+    
+    thisObject.texture.needsUpdate = true;
+
+    let fontSize = Math.max(camera.fov / 10, 15);
+    let username = localStorage.getItem("username");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    //textbox
+    context.font = fontSize + "pt Arial";
+    context.fillStyle = "rgb" + LANG.matchLanguage('nation', username); 
+    context.fillText(thisObject.text, canvas.width / 2, canvas.height / 2);
+    
 }
 
 
@@ -295,7 +299,7 @@ function moveCameraWithMouse() {
 }
 /// DOUBLE CLICK
 function div3DDoubleClick(event) {
-    addP5To3D(event.clientX, event.clientY);
+    //addP5To3D(event.clientX, event.clientY);
 }
 /// CLICK
 function div3DMouseDown(event) {
