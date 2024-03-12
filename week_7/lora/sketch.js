@@ -3,7 +3,6 @@ let prompt_field;
 const replicateProxy = "https://replicate-api-proxy.glitch.me";
 let imgs = [];
 
-//everyone should look like Dano
 const myLoraUrl =
   "https://replicate.delivery/pbxt/0KIe8eZNXTuPeIe89ye2U2qRaxClHID7yobYA3cfqiAuV1AeIA/tmptyicwiwqdano_lora_itpzip.safetensors";
 
@@ -37,15 +36,15 @@ function draw() {
 
 async function askForLora(prompt, loraUrl) {
   let data = {
-    version: "bb149dd20427beccf1b9f6332c7d5c233d914173fd463faa2c4a011080133afc",
+    version: "b42854b40200390a5851913c98e5eccb571cd7e42d4726917429d29c09e9ac16",
     input: {
       prompt: prompt,
       lora_urls: loraUrl,
       //     scheduler: "DPMSolverMultistep",
-      lora_scales: "0.5",
-      num_outputs: 4,
+      lora_scales: "0.5", 
+      num_outputs: 4,    
       guidance_scale: 7.5,
-      negative_prompt: "hat helmet",
+      negative_prompt: "hat",
       num_inference_steps: 50,
     },
   };
