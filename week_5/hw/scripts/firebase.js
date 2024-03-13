@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getDatabase, ref, onValue, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+import { getDatabase, ref, child, onValue, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 import { reactToFirebase } from './scene.js';
 
 
@@ -17,15 +17,33 @@ const firebaseConfig = {
   };
 
 const app = initializeApp(firebaseConfig);
-let appName = "week4_hw";
-
-let db = getDatabase();
+let appName = "MUN";
+const db = getDatabase();
 
 
 export function addNewThingToFirebase(folder, data) {
     //firebase will supply the key,  this will trigger "onChildAdded" below
     const dbRef = ref(db, appName + '/' + folder);
     const newKey = push(dbRef, data).key;
+
+    /*
+    //if new word
+    if(folder=="words"){
+        let word_bank = [];
+        //get the word
+        get(child(ref(db), `MUN/words/${newKey}`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                //add to array
+                word_bank.push(snapshot.val());
+                console.log(word_bank);
+            } else {
+              console.log("No data available");
+            }
+          }).catch((error) => {
+            console.error(error);
+          });
+    }
+    */
     return newKey; //useful for later updating
 }
 
@@ -44,8 +62,10 @@ export function deleteFromFirebase(folder, key) {
 export function subscribeToData(folder) {
     //get callbacks when there are changes either by you locally or others remotely
     const commentsRef = ref(db, appName + '/' + folder + '/');
+
     onChildAdded(commentsRef, (data) => {
         reactToFirebase("added", data.val(), data.key);
+        //console.log(commentsRef);
     });
     onChildChanged(commentsRef, (data) => {
         reactToFirebase("changed", data.val(), data.key)

@@ -29,17 +29,56 @@ init3D();
 recall();
 
 /* ----------- FIREBASE -----------*/
+let username = localStorage.getItem("username");
+let user_color = LANG.matchLanguage('nation', username);
+console.log(user_color);
+
+let word = localStorage.getItem("word");
+let word_lang = LANG.matchLanguage('color', user_color);
+//word = LANG.translate(word, word_lang);
+LANG.translate(word, word_lang)
+    .then(translatedText => {
+        //add translated to firebase
+        const word_data = { type: "word", text: translatedText};
+        FB.addNewThingToFirebase("words", word_data);
+    })
+let word_bank = [];
+
+
+//add word to firebase
+
+//add user name & color to firebase
+const user_data = { type: "user", text: username, color: user_color};
+//FB.addNewThingToFirebase("users", user_data);
+
 export function reactToFirebase(reaction, data, key){
     //add new text
     if(reaction === "added"){
-        createNewText(data, key);
+        switch(data.type){
+            case "word":
+                word_bank.push(data.text);
+                console.log(word_bank.length);
+                if(word_bank.length==5){
+                    let chosen_word = word_bank[Math.floor(Math.random() * word_bank.length)];
+                    console.log(word_bank);
+                    console.log(chosen_word);
+                }
+                break;
+            case "object":
+                createNewText(data, key);
+                break;
+            default:
+                break;
+        }
     }
     else if(reaction === "changed"){console.log(reaction);}
     else if(reaction === "removed"){console.log(reaction);}
 }
+
 function recall() {
     //console.log("recall");
-    FB.subscribeToData('objects'); //get notified if anything changes in this folder
+    FB.subscribeToData('objects');
+    FB.subscribeToData('words');
 }
 
 /* ----------- 3D -----------*/
@@ -103,6 +142,7 @@ function find3DCoornatesInFrontOfCamera(distance, mouse) {
 
 /* ----------- HTML -----------*/
 function initHTML() {
+
     // three.js format
     const THREEcontainer = document.createElement("div");
     THREEcontainer.setAttribute("id", "THREEcontainer");
@@ -184,55 +224,6 @@ function colorCast(pos){
     console.log("color: " + map_color);
 }
 
-/* ----------- CIRCLE -----------
-/// NEW P5
-function createP5Sketch(w, h) {
-    let sketch = function (p) {
-        let myCanvas;
-        
-        p.getCanvas = function () {
-            return myCanvas;
-        }
-        p.setup = function () {
-            myCanvas = p.createCanvas(w, h);
-        };
-        p.draw = function () {
-            this.x = p.width / 2;
-            this.y = p.height / 2;
-            this.alpha = 255;
-            p.noStroke();
-            p.fill(0, 0, 0, 10);
-            p.ellipse(this.x, this.y, 2);
-        };
-    };
-    return new p5(sketch);
-}
-
-/// ADD P5 TO 3D
-function addP5To3D(_x, _y) {
-    let newP5 = createP5Sketch(200, 200);
-    let p5Canvas = newP5.getCanvas(); //pull the p5 canvas out of sketch 
-    let canvas = p5Canvas.elt; //and then regular (elt) js canvas out of special p5 canvas
-    let texture = new THREE.Texture(canvas);
-    texture.needsUpdate = true;
-    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthTest: false });
-    let geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
-    let mesh = new THREE.Mesh(geo, material);
-    mesh.scale.set(10, 10, 10);
-
-    let mouse = { x: _x, y: _y };
-    const posInWorld = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
-    mesh.position.x = posInWorld.x;
-    mesh.position.y = posInWorld.y;
-    mesh.position.z = posInWorld.z;
-
-    mesh.lookAt(0, 0, 0);
-    scene.add(mesh);
-
-    let thisObject = { canvas: canvas, mesh: mesh, texture: texture, p5Canvas: p5Canvas };
-    thingsThatNeedUpdating.push(thisObject);
-}
-*/
 /* ----------- TEXT -----------*/
 /// NEW 
 function createNewText(data, firebaseKey) {
@@ -260,7 +251,7 @@ function createNewText(data, firebaseKey) {
 }
 /// ADD TO 3D
 function redrawText(thisObject) {
-    console.log(thisObject.text)
+    //console.log(thisObject.text)
     //position
     thisObject.mesh.position.x = thisObject.position.x;
     thisObject.mesh.position.y = thisObject.position.y;
@@ -273,12 +264,11 @@ function redrawText(thisObject) {
     thisObject.texture.needsUpdate = true;
 
     let fontSize = Math.max(camera.fov / 10, 15);
-    let username = localStorage.getItem("username");
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     //textbox
     context.font = fontSize + "pt Arial";
-    context.fillStyle = "rgb" + LANG.matchLanguage('nation', username); 
+    context.fillStyle = user_data.color; 
     context.fillText(thisObject.text, canvas.width / 2, canvas.height / 2);
     
 }
@@ -299,18 +289,15 @@ function moveCameraWithMouse() {
 }
 /// DOUBLE CLICK
 function div3DDoubleClick(event) {
-    //addP5To3D(event.clientX, event.clientY);
 }
 /// CLICK
 function div3DMouseDown(event) {
     mouseDownX = event.clientX;
-    mouseDownY = event.clientY;
-    
+    mouseDownY = event.clientY; 
     mouseDownLon = lon;
     mouseDownLat = lat;
 
     isUserInteracting = true;
-
 }
 /// DRAG
 function div3DMouseUp(event) {

@@ -45,6 +45,7 @@ export function matchLanguage(data, name){
         if(data == "color"){
             var data_array = lang_array[i].color;
             if (data_array && data_array.includes(name)) {
+                console.log(lang_array[i].name);
                 return lang_array[i].code;
             }
         }
@@ -59,6 +60,7 @@ export function matchLanguage(data, name){
     } 
 }
 
+/* LANGUAGE ARRAY */
 var language = {
     "description": "",
     "languages": [
@@ -73,7 +75,7 @@ var language = {
         "color": "(255,102,0)",
         "code": "ar",
         "name": "Arabic",
-        "nation": ["Algeria", "Bahrain", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Sudan", "Syria", "Tunisia", "UAE", "Yemen"]
+        "nation": ["Algeria", "Bahrain", "Chad", "Egypt", "Eritrea", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Sudan", "Syria", "Tunisia", "UAE", "Western Sahara", "Yemen"]
     },
     {
         "color": "(255,153,0)",
@@ -126,7 +128,7 @@ var language = {
         "color": "(0,255,51)",
         "code": "so",
         "name": "Somali",
-        "nation": ["Somalia"]
+        "nation": ["Somalia", "Djibouti"]
     },
     {
         "color": "(0,255,102)",
@@ -172,7 +174,7 @@ var language = {
         "color": "(245,255,191)",
         "code": "en",
         "name": "English",
-        "nation": ["US", "Canada", "Singapore", "UK", "Jamaica", "Barbados", "Trinidad", "Bahamas", "Guyana", "Fiji", "Tonga", "Solomon", "Micronesia", "Vanuatu", "Kiribati", "Cameroon", "Ghana", "Botswana"]
+        "nation": ["Anguilla", "Antigua and Barbuda", "Australia", "Bahamas", "Barbados", "Bermuda", "Belize", "Botswana", "Burundi", "Canada", "Cameroon", "Cayman Islands", "Cook Islands", "Dominica", "Falkland Islands (Malvinas)", "Faroe Islands", "Fiji", "Gambia", "Ghana", "Grenada", "Guam", "Guyana", "Isle of Man", "Jamaica", "Jersey", "Kiribati", "Liberia", "Marshall Islands", "Micronesia", "Montenegro", "Montserrat", "Namibia", "Nauru", "Niue", "Norfolk Island", "Northern Mariana Islands", "Papua New Guinea", "Palau", "Pitcairn", "Saint Helena", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and The Grenadines", "Solomon", "Sierra Leone", "Singapore", "South Sudan", "South Georgia and The South Sandwich Islands", "Swaziland", "Trinidad", "Tonga", "Tokelau", "Turks and Caicos Islands", "Tuvalu", "US", "UK", "Vanuatu", "Virgin Islands, British", "Virgin Islands, U.S.", "Zambia"]
     },
     {
         "color": "(0,255,153)",
@@ -188,277 +190,271 @@ var language = {
     },
 // --- EUROPE
     {
-        "color": "(255,255,0)",
+        "color": "(0,255,255)",
         "code": "sq",
         "name": "Albanian",
         "nation": ["Albania"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(0,204,255)",
         "code": "hy",
         "name": "Armenian",
         "nation": ["Armenia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(0,153,255)",
         "code": "az",
         "name": "Azerbaijani",
         "nation": ["Azerbaijan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(0,102,255)",
         "code": "be",
         "name": "Belarusian",
         "nation": ["Belarus"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(0,51,255)",
         "code": "bs",
         "name": "Bosnian",
-        "nation": ["Bosnia"]
+        "nation": ["Bosnia and Herzegovina"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(0,0,255)",
         "code": "bg",
         "name": "Bulgarian",
         "nation": ["Bulgaria"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,0,255)",
         "code": "ca",
         "name": "Catalan",
         "nation": ["Andorra"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(102,0,255)",
         "code": "hr",
         "name": "Croatian",
         "nation": ["Croatia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(153,0,255)",
         "code": "cs",
         "name": "Czech",
-        "nation": ["Czechia"]
+        "nation": ["Czech Republic"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(204,0,255)",
         "code": "da",
         "name": "Danish",
-        "nation": ["Denmark"]
+        "nation": ["Denmark", "Greenland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(255,0,255)",
         "code": "nl",
         "name": "Dutch",
-        "nation": ["Netherlands"]
+        "nation": ["Aruba", "Netherlands", "Suriname"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(255,0,204)",
         "code": "et",
         "name": "Estonian",
         "nation": ["Estonia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(255,0,153)",
         "code": "fi",
         "name": "Finnish",
         "nation": ["Finland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(255,0,102)",
         "code": "fr",
         "name": "French",
-        "nation": ["Benin", "Congo", "DRC", "Ivory Coast", "France", "Gabon", "Guinea", "Monaco", "Senegal", "Togo"]
+        "nation": ["Benin", "Burkina Faso", "Central African Republic", "Comoros", "Congo", "France", "Gabon", "Guadeloupe", "Guernsey", "Guinea", "Cote D'ivoire", "Mali", "Mauritius", "Mayotte", "Martinique", "Monaco", "New Caledonia", "Reunion", "Saint Pierre and Miquelon", "Senegal", "Seychelles", "Togo", "Wallis and Futuna"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(255,0,51)",
         "code": "ka",
         "name": "Georgian",
         "nation": ["Georgia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(20,204,204)",
         "code": "de",
         "name": "German",
-        "nation": ["Germany", "Austria", "Belgium", "Luxembourg"]
+        "nation": ["Austria", "Belgium", "Germany", "Liechtenstein", "Luxembourg", "Switzerland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(102,102,2)",
         "code": "el",
         "name": "Greek",
         "nation": ["Greece", "Cyprus"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(153,0,153)",
         "code": "iw",
         "name": "Hebrew",
         "nation": ["Israel"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(102,0,102)",
         "code": "hu",
         "name": "Hungarian",
         "nation": ["Hungary"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,0,51)",
         "code": "is",
         "name": "Icelandic",
         "nation": ["Iceland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,0,102)",
         "code": "ga",
         "name": "Irish",
         "nation": ["Ireland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,0,153)",
         "code": "it",
         "name": "Italian",
-        "nation": ["Italy", "San Marino"]
+        "nation": ["Italy", "San Marino", "Holy See (Vatican City State)"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,0,204)",
         "code": "kk",
         "name": "Kazakh",
         "nation": ["Kazazkhstan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,101,200)",
         "code": "ky",
         "name": "Kyrgyz",
         "nation": ["Kyrgyzstan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,51,255)",
         "code": "lv",
         "name": "Latvian",
         "nation": ["Latvia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(51,51,204)",
         "code": "lt",
         "name": "Lithuanian",
         "nation": ["Lithuania"]
     },
     {
-        "color": "(255,255,0)",
-        "code": "lb",
-        "name": "Luxembourgish*",
-        "nation": ["Luxembourg"]
-    },
-    {
-        "color": "(255,255,0)",
+        "color": "(51,51,102)",
         "code": "mk",
         "name": "Macedonian",
         "nation": ["Macedonia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(23,127,81)",
         "code": "mt",
         "name": "Maltese",
         "nation": ["Malta"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(149,215,150)",
         "code": "pl",
         "name": "Polish",
         "nation": ["Poland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(135,64,58)",
         "code": "no",
         "name": "Norwegian",
-        "nation": ["Norway"]
+        "nation": ["Norway", "Svalbard and Jan Mayen"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(71,179,173)",
         "code": "pt",
         "name": "Portuguese*",
-        "nation": ["Portugal", "Brazil", "Angola", "Cabo Verde", "Guinea-Bissau", "Mozambique", "Sao Tome", "East Timor"]
+        "nation": ["Portugal", "Brazil", "Angola", "Cabo Verde", "Guinea-bissau", "Mozambique", "Sao Tome and Principe", "Timor-leste"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(91,168,88)",
         "code": "ro",
         "name": "Romanian",
-        "nation": ["Romania"]
+        "nation": ["Moldova", "Romania"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(59,147,170)",
         "code": "ru",
         "name": "Russian",
         "nation": ["Russia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(55,182,70)",
         "code": "gd",
         "name": "Scots Gaelic",
         "nation": ["Scotland"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(61,203,243)",
         "code": "sr",
         "name": "Serbian",
         "nation": ["Serbia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(58,114,88)",
         "code": "sk",
         "name": "Slovak",
         "nation": ["Slovakia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(100,122,203)",
         "code": "sl",
         "name": "Slovenian",
         "nation": ["Slovenia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(100,125,163)",
         "code": "sv",
         "name": "Swedish",
-        "nation": ["Sweden"]
+        "nation": ["Sweden", "Åland Islands"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(70,122,111)",
         "code": "es",
         "name": "Spanish",
-        "nation": ["Spain", "Mexico", "Costa Rica", "El Salvador", "Guatemala", "Honduras", "Nicaragua", "Panama", "Cuba", "Dominican Republic", "Puerto Rico", "Argentina", "Bolivia", "Chile", "Colombia", "Ecuador", "Paraguay", "Peru", "Uruguay", "Venezuela", "Equatorial Guinea"]
+        "nation": ["Spain", "Mexico", "Costa Rica", "El Salvador", "Guatemala", "Honduras", "Nicaragua", "Panama", "Cuba", "Dominican Republic", "Puerto Rico", "Argentina", "Bolivia", "Chile", "Colombia", "Ecuador", "Paraguay", "Peru", "Uruguay", "Venezuela", "Equatorial Guinea", "Cuba"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(62,202,95)",
         "code": "tg",
         "name": "Tajik",
         "nation": ["Tajikistan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(82,102,181)",
         "code": "tr",
         "name": "Turkish",
         "nation": ["Turkey"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(75,189,64)",
         "code": "tk",
         "name": "Turkmen",
         "nation": ["Turkmenistan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(107,201,91)",
         "code": "uk",
         "name": "Ukrainian",
         "nation": ["Ukraine"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(83,148,96)",
         "code": "uz",
         "name": "Uzbek",
         "nation": ["Uzbekistan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(110,130,203)",
         "code": "cy",
         "name": "Welsh",
         "nation": ["Wales"]
@@ -494,143 +490,131 @@ var language = {
         "name": "Yiddish*",
         "nation": ["Russia"]
     },
+    {
+        "color": "(51,51,153)",
+        "code": "lb",
+        "name": "Luxembourgish*",
+        "nation": ["Luxembourg"]
+    },
     */
 // --- ASIA
     {
-        "color": "(255,255,0)",
+        "color": "(147,178,64)",
         "code": "bn",
         "name": "Bengali",
         "nation": ["Bangladesh"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(147,84,82)",
         "code": "zh-CN",
         "name": "Chinese (Simplified)",
         "nation": ["China"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(23,117,165)",
         "code": "zh-TW",
         "name": "Chinese (Traditional)",
         "nation": ["Hong Kong", "Taiwan", "Macau"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(33,164,122)",
         "code": "tl",
         "name": "Filipino",
         "nation": ["Philippines"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(34,92,22)",
         "code": "hi",
         "name": "Hindi",
         "nation": ["India"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(130,214,35)",
         "code": "id",
         "name": "Indonesian",
         "nation": ["Indonesia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(47,191,250)",
         "code": "ja",
         "name": "Japanese",
         "nation": ["Japan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(133,157,155)",
         "code": "km",
         "name": "Khmer",
         "nation": ["Cambodia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(209,22,236)",
         "code": "ko",
         "name": "Korean",
-        "nation": ["Korea"]
+        "nation": ["North Korea", "South Korea"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(78,35,176)",
         "code": "lo",
         "name": "Lao",
         "nation": ["Laos"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(101,215,172)",
         "code": "ms",
         "name": "Malay",
-        "nation": ["Malaysia"]
+        "nation": ["Brunei Darussalam", "Malaysia"]
     },
-    
     {
-        "color": "(255,255,0)",
+        "color": "(112,138,16)",
         "code": "mi",
         "name": "Maori",
         "nation": ["New Zealand"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(75,215,11)",
         "code": "mn",
         "name": "Mongolian",
         "nation": ["Mongolia"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(193,28,165)",
         "code": "my",
         "name": "Myanmar (Burmese)",
         "nation": ["Myanmar"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(76,14,198)",
         "code": "ne",
         "name": "Nepali",
-        "nation": ["Nepal"]
+        "nation": ["Bhutan", "Nepal"]
     },
+    
     {
-        "color": "(255,255,0)",
-        "code": "or",
-        "name": "Odia (Oriya)",
-        "nation": ["India"]
-    },
-    {
-        "color": "(255,255,0)",
+        "color": "(147,49,86)",
         "code": "sm",
         "name": "Samoan",
         "nation": ["Samoa"]
     },
     {
-        "color": "(255,255,0)",
-        "code": "pa",
-        "name": "Punjabi",
-        "nation": ["India"]
+        "color": "(175,100,200)",
+        "code": "si",
+        "name": "Sinhala",
+        "nation": ["Sri Lanka"]
     },
     {
-        "color": "(255,255,0)",
-        "code": "sd",
-        "name": "Sindhi",
-        "nation": ["Samoa"]
-    },
-    {
-        "color": "(255,255,0)",
-        "code": "te",
-        "name": "Telugu",
-        "nation": ["India"]
-    },
-    {
-        "color": "(255,255,0)",
+        "color": "(187,141,40)",
         "code": "th",
         "name": "Thai",
         "nation": ["Thailand"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(127,28,151)",
         "code": "ur",
         "name": "Urdu",
         "nation": ["Pakistan"]
     },
     {
-        "color": "(255,255,0)",
+        "color": "(138,34,218)",
         "code": "vi",
         "name": "Vietnamese",
         "nation": ["Vietnam"]
@@ -672,11 +656,6 @@ var language = {
         "nation": ["Indonesia"]
     },
     {
-        "code": "si",
-        "name": "Sinhala*",
-        "nation": ["Pakistan"]
-    },
-    {
         "code": "ta",
         "name": "Tamil*",
         "nation": ["India", "Sri Lanka"]
@@ -685,6 +664,30 @@ var language = {
         "code": "ug",
         "name": "Uyghur*",
         "nation": ["China"]
+    },
+    {
+        "color": "(49,123,187)",
+        "code": "or",
+        "name": "Odia (Oriya)",
+        "nation": ["India"]
+    },
+    {
+        "color": "(74,215,103)",
+        "code": "pa",
+        "name": "Punjabi",
+        "nation": ["India"]
+    },
+    {
+        "color": "(122,115,158)",
+        "code": "sd",
+        "name": "Sindhi",
+        "nation": ["India"]
+    },
+    {
+        "color": "(113,116,39)",
+        "code": "te",
+        "name": "Telugu",
+        "nation": ["India"]
     },
     */
     ]
