@@ -36,7 +36,7 @@ function draw() {
 
 async function askForLora(prompt, loraUrl) {
   let data = {
-    version: "b42854b40200390a5851913c98e5eccb571cd7e42d4726917429d29c09e9ac16",
+    version: "a5b0e981c875f656936c6c67b385c27057e226141e4e62fd5177ce96caee95e2",
     input: {
       prompt: prompt,
       lora_urls: loraUrl,
@@ -60,8 +60,9 @@ async function askForLora(prompt, loraUrl) {
   console.log("url", url, "options", data);
   const raw = await fetch(url, options);
   const proxy_said = await raw.json();
+  console.log(proxy_said);
   let output = proxy_said.output;
-  console.log("Proxy Returned", output);
+  /*
   if (output.length > 0) {
     for (let i = 0; i < output.length; i++) {
       loadImage(output[i], (incomingImage) => {
@@ -69,4 +70,5 @@ async function askForLora(prompt, loraUrl) {
       });
     }
   }
+  */
 }

@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    font-family: Montserrat;
+    background-color: rgb(255, 165, 180);
+}
+body {
+    padding: 1em;
+}
+canvas {
+    display: block;
+    margin: auto;
+    padding: 0;
+}
+input {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 1em;
+    font-style: italic;
+    border-radius: 2em;
+    border-style: none;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    padding: 0.5em;
+    
+}
+input:focus {
+    background-color: white;
+    color: black;
+    font-style: normal;
+}
+button {
+    background-color: rgb(165, 45, 65);
+    font-size: 1.5em;
+    font-weight: 700;
+    color: rgb(255, 165, 180);
+    border-radius: 2em;
+    border-style: none;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    padding: 0.5em;
+}
+button:hover {
+    background-color: white;
+}
+
+
+#instructions {
+    color: white;
+    font-size: 1em;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin: auto;
+    margin-top: 5%;
+    width: fit-content;
+}
+#load {
+    color: rgb(167, 83, 97);
+    font-weight: 500;
+    font-style: italic;
+    font-size: 1em;
+    display: block;
+    margin: auto;
+    width: fit-content;
+    margin-top: 2em;
+}
+#result {
+    background-color: white;
+    color: black;
+    font-size: 1.2em;
+    font-weight: 600;
+    border-radius: 2em;
+    border-style: none;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 1em;
+    width: fit-content;
+    
+    visibility: hidden;
+}
+
