@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js"></script>
+    <title>Week 8: Embeddings</title>
+</head>
+
+
+<body>
+    <div id="login" class="authDiv">
+        <button id="signInWithGoogle" class="authButton">Log in with Google</button>
+        <form>
+            <input type="text" id="email" placeholder="Email">
+            <br>
+            <input type="password" id="password" placeholder="Password" autocomplete="on">
+            <br>
+        </form>
+        <span id="emailButtons">
+            <button id="signUpWithEmail" class="authButton">Sign Up</button>
+            <button id="signInWithEmail" class="authButton">Log in</button>
+        </span>
+
+    </div>
+    <div id="logout" style="display:none" class="authDiv">
+        <img id="userPic" width="50">
+        <br>
+        <button id="logoutButton" class="authButton">Log out</button>
+    </div>
+
+    <div id="instructions">Type in a phrase to get an accompanying song</div>
+    
+    <input type="text" id="inputText" placeholder="What's stuck in your head?" autocomplete="off">
+    <div id="feedback"></div>
+
+    <div id="localUser">
+        <h1 id="title"></h1>
+        <img id="outputImage" width="256" height="256">
+    </div>
+
+    <div id="playlist">
+        <p>What other people are thinking about...</p>
+    </div>
+
+   
+    
+
+    <script src="firebaseAuth.js" type="module"></script>
+    <script src="test.js" type="module"></script>
+
+</body>
+
+</html>

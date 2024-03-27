@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    font-family: Montserrat;
+    background-color: rgb(255, 165, 180);
+    margin: 0;
+    padding: 0;
+}
+body {
+    padding: 1em;
+}
+h1 {
+    color: rgb(165, 45, 65);
+    background-color: white;
+    font-size: 1.5em;
+}
+p {
+    color: rgb(167, 83, 97);
+    position: absolute;
+    font-weight: 500;
+    font-style: italic; 
+    border-radius: 1em;
+    width: min-content;
+    padding: 0.5em;
+}
+img {
+    display: block;
+    margin: auto;
+    padding: 0;
+}
+
+/* --- INPUT --- */
+input {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 1em;
+    font-style: italic;
+    border-radius: 2em;
+    border-style: none;
+    display: block;
+    margin: auto;
+    width: 50vw;
+    margin-top: 20px;
+    padding: 0.5em;
+    
+}
+input:focus {
+    background-color: white;
+    color: black;
+    font-style: normal;
+}
+
+/* --- BUTTON --- */
+button {
+    background-color: rgb(165, 45, 65);
+    font-size: 1.5em;
+    font-weight: 700;
+    color: rgb(255, 165, 180);
+    border-radius: 2em;
+    border-style: none;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    padding: 0.5em;
+}
+button:hover {
+    background-color: white;
+}
+.authDiv button{
+    font-weight: 500;
+    font-size: 0.8em;
+}
+
+#instructions {
+    color: white;
+    font-size: 1em;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin: auto;
+    margin-top: 5%;
+    width: fit-content;
+}
+#feedback {
+    color: rgb(167, 83, 97);
+    font-weight: 500;
+    font-style: italic;
+    font-size: 1em;
+    display: block;
+    margin: auto;
+    width: fit-content;
+    margin-top: 2em;
+}
+
+/* --- RESULT --- */
+#localUser{
+    background-color: white;
+    color: black;
+    font-size: 1em;
+    font-weight: 600;
+    text-align: center;
+
+    border-radius: 2em;
+    border-style: none;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 1em;
+    width: fit-content;
+    
+    visibility: hidden;
+}
+
+#localUser img{
+    margin-top: 1em;
+}
+
+/* --- PLAYLIST --- */
+#playlist {
+    background-color: rgb(248, 132, 150);
+    border-radius: 1em;
+    display: block;
+    margin: auto;
+
+    padding: 1em;
+    width: min-content;
+    max-width: 70vw;
+    overflow: auto;
+    white-space: nowrap;
+    visibility: hidden;
+}
+#playlist div{
+    display: inline-block;
+    left: 0;
+    margin-top: 3em;
+}
+#playlist p {
+    background-color: rgb(248, 158, 172);
+    color: white;
+}
+
+/* --- LOGIN --- */
+.authDiv {
+    font-size: 0.8em;
+    border: 3px solid darkred;
+    padding: 10px;
+    border-radius: 10px;
+    display: block;
+    margin: auto;
+    width: fit-content;
+}
+.authButton {
+    display: inline-block;
+    margin: auto;
+    width: 25vw;
+}
+.authButton:hover {
+    background-color: #45a049;
+}
+#email, #password{
+    margin: 0;
+}
+#signInWithGoogle {
+    margin-bottom: 1em;
+    width: 50vw;
+}
+
+
