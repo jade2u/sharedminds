@@ -83,8 +83,8 @@ function cosineSimilarity(a, b) {
 let inputField = document.getElementById("inputText");
 inputField.addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
-        const result = document.querySelector('#localUser');
-        result.style.visibility = "hidden";
+        //const result = document.querySelector('#localUser');
+        //result.style.visibility = "hidden";
         askForWords(inputField.value);
     }
 });
