@@ -66,7 +66,7 @@ function renderOthers() {
         //otherDiv.style.top = (window.innerHeight / 2 + (10 * Object.keys(others).length)) + "px";
         //otherDiv.style.transform = "translate(-50%,-50%)";
 
-        otherDiv.innerHTML = "<img src='" + other.base64 + "' width='150px' />";
+        otherDiv.innerHTML = "<img src='" + other.base64 + "' width='150px' crossorigin='anonymous'/>";
     }
 
 
@@ -243,6 +243,7 @@ async function askForPicture(prompt) {
             showCard(prompt);
         }
         localImage.src = imageURL;
+        localImage.crossOrigin = 'anonymous';
 
     }
 }
