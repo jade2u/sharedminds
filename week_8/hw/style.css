@@ -91,6 +91,10 @@ button:hover {
     width: fit-content;
     margin-top: 2em;
 }
+#username {
+    color: white;
+    border-radius: 1em;
+}
 
 /* --- RESULT --- */
 #localUser{
