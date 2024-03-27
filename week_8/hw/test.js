@@ -62,32 +62,7 @@ function renderOthers() {
         let y = distance * Math.sin(angle);
         //console.log("x,y", x, y, angle);
         angle += angleStep;
-        //otherDiv.style.left = (window.innerWidth / 2) + "px";
-        //otherDiv.style.top = (window.innerHeight / 2 + (10 * Object.keys(others).length)) + "px";
-        //otherDiv.style.transform = "translate(-50%,-50%)";
-
         otherDiv.innerHTML = "<img src='" + other.base64 + "' width='150px' crossorigin='anonymous'/>";
-    }
-
-
-}
-
-function getNormalized2DDistance(me, others) {
-
-    let maxDistance = 0;
-    let minDistance = 10000000;
-    for (let key in others) {
-        let other = others[key];
-        console.log("me", me, other);
-        other.distance = cosineSimilarity(me.embedding, other.embedding);
-        console.log("distance", other.distance);
-        if (other.distance > maxDistance) maxDistance = other.distance;
-        if (other.distance < minDistance) minDistance = other.distance;
-    }
-    for (let key in others) {
-        let other = others[key];
-        other.normalizedDistance = (other.distance - minDistance) / (maxDistance - minDistance);
-        console.log("normalizedDistance", other.normalizedDistance);
     }
 }
 
@@ -151,12 +126,9 @@ async function askForEmbedding(prompt, base64) {
 }
 
 async function askForWords(prompt) {
-    /*
-    document.body.style.cursor = "progress";
-    const result = select("#result");
-    const loading = select("#load");
-    loading.html("Getting the name...");
-    */
+    const result = document.querySelector('#localUser');
+    result.style.visibility = "hidden";
+
     const data = {
         "version": "35042c9a33ac8fd5e29e27fb3197f33aa483f72c2ce3b0b9d201155c7fd2a287",
         input: {
