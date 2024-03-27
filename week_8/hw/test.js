@@ -83,8 +83,8 @@ function cosineSimilarity(a, b) {
 let inputField = document.getElementById("inputText");
 inputField.addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
-        //const result = document.querySelector('#localUser');
-        //result.style.visibility = "hidden";
+        const result = document.querySelector('#localUser');
+        result.style.visibility = "hidden";
         askForWords(inputField.value);
     }
 });
@@ -128,7 +128,6 @@ async function askForEmbedding(prompt, base64) {
 }
 
 async function askForWords(prompt) {
-
     const data = {
         "version": "35042c9a33ac8fd5e29e27fb3197f33aa483f72c2ce3b0b9d201155c7fd2a287",
         input: {
