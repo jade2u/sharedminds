@@ -117,18 +117,20 @@ button:hover {
 }
 
 /* --- PLAYLIST --- */
-#playlist {
+div#playlist {
     background-color: rgb(248, 132, 150);
     border-radius: 1em;
     display: block;
     margin: auto;
-
     padding: 1em;
-    width: min-content;
-    max-width: 70vw;
+    width: fit-content;
+    max-width: 80vw;
+    height: fit-content;
+    min-height: 30vw;
     overflow: auto;
     white-space: nowrap;
     visibility: hidden;
+    
 }
 #playlist div{
     display: inline-block;
