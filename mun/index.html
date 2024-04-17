@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <title>Week 5: Social</title>
+    <meta charset="UTF-8">
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <link rel="stylesheet" type="text/css" href="index-style.css" />
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@v0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@v0.160.0//examples/jsm/"
+          }
+        }
+    </script>
+    <script id="fragment_shader_screen" type="x-shader/x-fragment">
+        varying vec2 vUv;
+        uniform sampler2D tDiffuse;
+
+        void main() {
+            gl_FragColor = texture2D( tDiffuse, vUv );
+        }
+    </script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec2 vUv;
+
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
+</head>
+
+<body>
+    <h1 id="chosen-word"></h1>
+
+    <input id="textbox" autocomplete="off"></input>
+    <script>
+        document.getElementById('textbox').setAttribute('placeholder', localStorage.getItem("username") + " says...");
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
+    <script src="scripts/language.js" type="module"></script>
+    <script src="scripts/scene.js" type="module"></script>
+    <script src="scripts/firebase.js" type="module"></script>
+</body>
+
+</html>

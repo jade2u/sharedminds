@@ -1,0 +1,105 @@
+* {
+    font-family: 'Andale Mono', monospace;
+}
+body {
+    background-color: skyblue;
+}
+img {
+    width: 8em;
+    display: block;
+    margin: auto;
+    margin-bottom: 1em;
+}
+
+/* --- INPUT DIVS --- */
+select, input {
+    margin-top: 1em;
+    width: 15em;
+}
+.form{
+    background-color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    font-size: 1em;
+    text-align: center;
+
+    border-radius: 1em;
+    width: 80%;
+    padding: 1em;
+    display: block;
+    margin: auto;
+    margin-left: 2em;;
+}
+
+/* --- BUTTONS --- */
+/* all */
+button {
+    font-size: 1.3em;
+    font-weight: 500;
+    border-radius: 2em;
+    border-style: none;
+    width: fit-content;
+    padding: 1em;
+}
+/* submit */
+.form button, .form button:visited{
+    background-color: skyblue;
+    color: white;
+    margin-top: 1em;
+    transition: padding-left 1s, padding-right 1s;
+}
+.form button:hover{
+    background-color: hsl(197, 71%, 50%);
+    color: white;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+}
+.form button:active, .form button:focus {
+    background-color: white;
+    color: skyblue;
+    font-weight: 700;
+}
+.form button:disabled {
+    background-color: gray;
+    color: white;
+    padding: 1em;
+    transition: none;
+}
+/* specific */
+#start-btn {
+    background-color:hsl(150, 100%, 37%);
+    color: white;
+    display: block;
+    margin: auto;
+    margin-top: 1em;
+    width: 50%;
+    transition: padding 1s;
+}
+#start-btn:hover{
+    font-weight: bolder;
+    padding: 1.5em;
+}
+#start-btn:active, .form button:focus {
+    background-color: white;
+    color: hsl(150, 100%, 37%);
+}
+#start-btn:disabled {
+    background-color: gray;
+    transition: none;
+}
+
+/* --- GRIDS --- */
+body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    column-gap: 0;
+    row-gap: 0;
+    grid-template-areas:
+      "word img"
+      "country start-btn";
+}
+#word-form {grid-area: word};
+img {grid-area: img};
+#country-form {grid-area: country};
+#start-btn {grid-area: start-btn};
+
