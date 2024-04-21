@@ -5,23 +5,77 @@ body {
     background-color: skyblue;
 }
 img {
-    width: 8em;
+    width: 10em;
     display: block;
     margin: auto;
+    margin-top: 5%;
+    margin-bottom: 10%;
+}
+hr {
+    border: 1px solid skyblue;
+}
+/* --- GOOGLE LOGIN --- */
+.authDiv {
+    background-color: white;
+    border-radius: 2em;
+    width: 80%;
+    padding: 2em;
+    display: block;
+    margin: auto;
+}
+.authDiv form{
+    margin-top: 1em;
+}
+
+/* buttons */
+.authButton {
+    font-variant: small-caps;
+    display: block;
+    margin: auto;
+}
+/* sign-up */
+#signUpWithEmail {
+    width: 50%;
+}
+#signUpWithEmail:hover {
+    font-weight: bolder;
+    background-color: rgb(0, 105, 175);
+    color: white;
+}
+/* google */
+#google-logo {
+    height: 1em;
+    vertical-align: text-bottom;
+}
+#signInWithGoogle {
+    background-color: white;
+    color: rgb(0, 105, 175);
+    border: 2px solid ;
+    border-color: rgb(0, 105, 175);
+    width: 100%;
     margin-bottom: 1em;
 }
+#signInWithGoogle:hover{
+    font-weight: bolder;
+    box-shadow: 0px 0px 0.3em gray;
+}
+#signInWithGoogle:active {
+    font-weight: bolder;
+    background-color: rgb(0, 105, 175);
+    color: white;
+}
+
 
 /* --- INPUT DIVS --- */
 select, input {
-    margin-top: 1em;
-    width: 15em;
+    display: block;
+    margin: auto;
+    width: 50%;
 }
 .form{
-    background-color: rgba(255, 255, 255, 0.5);
-    font-weight: 600;
+    background-color: white;
     font-size: 1em;
     text-align: center;
-
     border-radius: 1em;
     width: 80%;
     padding: 1em;
@@ -29,16 +83,19 @@ select, input {
     margin: auto;
     margin-left: 2em;;
 }
+#logout
+{
+    background: none;
+}
 
 /* --- BUTTONS --- */
 /* all */
 button {
     font-size: 1.3em;
-    font-weight: 500;
     border-radius: 2em;
     border-style: none;
     width: fit-content;
-    padding: 1em;
+    padding: 0.5em;
 }
 /* submit */
 .form button, .form button:visited{
@@ -87,7 +144,7 @@ button {
     transition: none;
 }
 
-/* --- GRIDS --- */
+/* --- GRIDS --- 
 body {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -102,4 +159,4 @@ body {
 img {grid-area: img};
 #country-form {grid-area: country};
 #start-btn {grid-area: start-btn};
-
+*/
