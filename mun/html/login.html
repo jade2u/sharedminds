@@ -307,7 +307,7 @@
         </div>
 
         <!-- START -->
-        <button id="start-btn" type="submit" onclick="user(event)" disabled>START</button>
+        <button id="start-btn" type="submit" onclick="start(event)" disabled>START</button>
     </div>
 
     <!-- SCRIPTS -->
@@ -341,13 +341,14 @@
                 if(document.getElementById("name-btn").disabled == true){
                     document.getElementById('start-btn').disabled = false;
                 }
+                
             }
         }
 
         /// NAME
+        var name_input = document.getElementById("country");
+        var name_btn = document.getElementById("name-btn");
         function username(event) {
-            var name_input = document.getElementById("country");
-            var name_btn = document.getElementById("name-btn");
             //disable button & input
             name_input.disabled = true;
             name_btn.disabled = true;
@@ -355,11 +356,13 @@
             if(document.getElementById("word-btn").disabled == true){
                 document.getElementById('start-btn').disabled = false;
             }
+            
         }
         // START
-        function user(event) {
+        function start(event) {
             //redirect
-            //window.location.href = "index.html";
+            let body = document.querySelector('body');
+            body.innerHTML = "Loading...";
         }
     </script>
     <script src="../scripts/firebase.js" type="module"></script>

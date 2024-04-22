@@ -2,9 +2,12 @@ import * as FB from './firebase.js';
 
 /* --- VARS --- */
 let others = {};
+let users = [];
+let win = true;
 let me, user_name;
 let folderName = "MUN";
 const replicateProxy = "https://replicate-api-proxy.glitch.me";
+
 
 /* --- BUTTONS --- */
 // COUNTRY
@@ -22,6 +25,7 @@ word_btn.addEventListener("click", function () {
     askForWords(word_input.value);
 });
 
+
 /* --- FIREBASE --- */
 /// INIT
 FB.initFirebase(function (user) {
@@ -32,20 +36,41 @@ FB.initFirebase(function (user) {
     }
 });
 /// REACT
-function reactToFirebase(action, data, key) {
+export function reactToFirebase(action, data, key) {
     //added
     if (action == "added") {
-        if (key == FB.getUser().uid) {me = data;} 
-        else {others[key] = data;}
+        if (key == FB.getUser().uid) {
+            me = data;
+        } 
+        else {
+            others[key] = data;
+        }
+        users.push(data);
     } 
     //changed
     else if (action == "changed") {
         if (key == FB.getUser().uid) {me = data;} 
-        else {others[key] = data;}
+        else {
+            others[key] = data;
+        }
     } 
     //removed
     else if (action == "removed") {console.log("removed from FB", data, key);}
+    
+
+    if(win == true && users.length==2){
+        const random = Math.floor(Math.random() * users.length);
+        const chosen_user = users[random];
+        console.log(chosen_user);
+        
+        FB.setDataInFirebase(folderName + "/chosen", {
+            god: chosen_user
+        });
+        win = false;
+    }
+    //console.log(win);
 }
+
 /// EMBEDDING
 async function askForEmbedding(prompt, base64) {
     const data = {
@@ -70,7 +95,7 @@ async function askForEmbedding(prompt, base64) {
     const raw_response = await fetch(url, options);
     const replicateJSON = await raw_response.json();
     //add to firebase if exists
-    if (replicateJSON.output.length == 0) {feedback.innerHTML = "Something went wrong, try it again";} 
+    if (replicateJSON.output.length == 0) {console.log("Something went wrong, try it again");} 
     else {
         let user = FB.getUser();
         let email = user.email;
@@ -81,6 +106,10 @@ async function askForEmbedding(prompt, base64) {
             base64: base64, 
             embedding: replicateJSON.output 
         });
+        localStorage.setItem("key", user.uid);
+        localStorage.setItem("country", user_name);
+        //console.log(localStorage.getItem("user"));
+        window.location.href = "../html/index.html";
     }
 }
 /// API
@@ -89,7 +118,7 @@ async function askForWords(prompt) {
     const data = {
         "version": "35042c9a33ac8fd5e29e27fb3197f33aa483f72c2ce3b0b9d201155c7fd2a287",
         input: {
-            prompt: "reply with no additional text or wording, the song title and artist of a song that has the lyrics: " + prompt,
+            prompt: "reply with no additional text or wording, an existing song that has the phrase '" + prompt + "' in the title",
             max_tokens: 100,
             max_length: 100,
         },
@@ -109,7 +138,7 @@ async function askForWords(prompt) {
     const words_response = await fetch(url, options);
     const proxy_said = await words_response.json();
     //turn answer into embedding
-    if (proxy_said.output.length == 0) {feedback.innerHTML = "Something went wrong, try it again";} 
+    if (proxy_said.output.length == 0) {console.log("Something went wrong, try it again");} 
     else {
         let reply = proxy_said.output.join("");
         let base64 = reply;

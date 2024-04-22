@@ -32,15 +32,25 @@ mesh_static.position.set(-5,0,-5);
 initHTML();
 init3D();
 recall();
+FB.initFirebase(function (user) {
+    if (user) {
+        FB.subscribeToData("MUN/" + user.uid + "/words", reactToFirebase);
+        FB.subscribeToData("MUN/chosen", reactToFirebase);
+    } else {
+        console.log('no user');
+    }
+});
 
 /* ----------- FIREBASE -----------*/
 /// USERNAME
-let username = localStorage.getItem("username");
-let user_color = LANG.matchLanguage('nation', username);
+let user_key = localStorage.getItem("key");
+let user_country = localStorage.getItem("country");
+let user_color = LANG.matchLanguage('nation', user_country);
 //add user name & color to firebase
-const user_data = { type: "user", text: username, color: user_color};
+const user_data = {color: user_color};
 //add to firebase
-FB.addNewThingToFirebase("user", user_data);
+FB.setDataInFirebase("MUN/" + user_key + "/color", user_color);
+
 
 /// WORD
 let word = localStorage.getItem("word");
@@ -50,35 +60,39 @@ LANG.translate(word, word_lang)
     .then(translatedText => {
         //add translated word to firebase
         const word_data = { type: "word", text: translatedText, lang: word_lang, eng: word};
-        FB.addNewThingToFirebase("words", word_data);
+       // FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
 })
 
 /// CHOSEN WORD
+/*
 LANG.word()
     .then(fetchWord => {
         //add translated word to firebase
         console.log(fetchWord);
 })
+*/
 /// FIREBASE CHANGE
 export function reactToFirebase(reaction, data, key){
+    console.log(data);
     //if something added
     if(reaction === "added"){
         switch(data.type){
             /// CHOSEN WORD
             case "word":
+                /*
                 //push to word bank
                 word_bank.push(data.text);
-                /*
+                
                 //get random word from word bank
                 let random_num = Math.floor(Math.random() * word_bank.length)
                 chosen_word = word_bank[random_num];
                 //add to firebase & array
-                FB.addNewThingToFirebase("chosen", chosen_word);
+                FB.setDataInFirebase("MUN/chosen", chosen_word);
                 */
                 break;
             /// NEW TEXT
             case "objects":
-                console.log('new text');
+                //console.log('new text');
                 createNewText(data, key);
                 break;
             /// NEW USER
@@ -96,8 +110,8 @@ export function reactToFirebase(reaction, data, key){
 
 function recall() {
     //console.log("recall");
-    FB.subscribeToData('objects');
-    FB.subscribeToData('words');
+   //FB.subscribeToData('objects');
+    //FB.subscribeToData('words');
 }
 
 /* ----------- 3D -----------*/
@@ -116,20 +130,19 @@ function init3D() {
     bgGeometery.scale(-1, 1, 1);
     scene.add(mesh_static);
     //pic
-    let panotexture = new THREE.TextureLoader().load("map.png");
+    let panotexture = new THREE.TextureLoader().load("../map.png");
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
 
     let planeMesh;
     //load texture and initialize planeMesh, textureData and renderTargetTexture
-    new THREE.TextureLoader().load("map.png", function (texture) {
+    new THREE.TextureLoader().load("../map.png", function (texture) {
         planeMesh = new THREE.Mesh(
         new THREE.SphereGeometry(texture.image.width, texture.image.height),
         new THREE.MeshBasicMaterial({ map: texture })
         );
     })
-
     scene.add(planeMesh);
 
     //move
@@ -187,9 +200,9 @@ function initHTML() {
             LANG.translate(textbox.value, new_lang)
             .then(translatedText => {
                 //add translated to firebase
-                const data = { type: "objects", position: { x: pos.x, y: pos.y, z: pos.z }, text: translatedText };
-                console.log('new_text');
-                FB.addNewThingToFirebase("objects", data);
+                const data = { type: "objects", position: { x: pos.x, y: pos.y, z: pos.z }, text: textbox.value, translation: translatedText};
+
+                FB.addNewThingToFirebase("MUN/" + user_key + "/words/", data);
             })
             
             //draw circle & new text
@@ -259,7 +272,7 @@ function createNewText(data, firebaseKey) {
     mesh.lookAt(0, 0, 0);
     mesh.scale.set(10, 10, 10);
     scene.add(mesh);
-    let text_msg = data.text;
+    let text_msg = data.translation;
     let posInWorld = data.position;
     //add to firebase
     let thisObject = { type: "text", firebaseKey: firebaseKey, threeID: mesh.uuid, text: text_msg, position: posInWorld, canvas: canvas, mesh: mesh, texture: texture };
@@ -271,7 +284,7 @@ function createNewText(data, firebaseKey) {
 }
 /// ADD TO 3D
 function redrawText(thisObject) {
-    console.log(thisObject.text)
+    //console.log(thisObject.text)
     //position
     thisObject.mesh.position.x = thisObject.position.x;
     thisObject.mesh.position.y = thisObject.position.y;

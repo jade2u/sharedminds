@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getDatabase, ref, off, onValue, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 import { getAuth, setPersistence, browserSessionPersistence, signOut, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-//import {reactToFirebase} from "./embeddings.js";
+//import {reactToFirebase} from "./scene.js";
 
 /* --- VARS --- */
 let db, auth, app;
@@ -38,7 +38,7 @@ export function initFirebase(callback) {
         //signed in
         if (user) {
             const uid = user.uid;
-            console.log("signed in", user);
+            //console.log("signed in", user);
             callback(user);
             showLogOutButton(user);
         } 
@@ -68,7 +68,7 @@ export function deleteFromFirebase(folder, key) {
 }
 /// CHANGE
 export function setDataInFirebase(dbPath, data) {
-    const dbRef = ref(db, dbPath) //if it doesn't exist, it adds (pushes) with you providing the key
+    const dbRef = ref(db, dbPath); //if it doesn't exist, it adds (pushes) with you providing the key
     set(dbRef, data); //if it does exist, it overwrites
 }
 /// UPDATE
@@ -110,32 +110,40 @@ function showLoginButtons() {
 /// LOGGED IN
 function showLogOutButton(user) {
     //only show log out button
-    document.getElementById("logout").style.display = "block";
-    document.getElementById("login").style.display = "none";
-    let userNameDiv = document.getElementById("userName");
-    //show email as user
-    if (user.displayName) {userNameDiv.innerHTML = user.email;}
+    if(document.getElementById("logoutButton") != undefined){
+        document.getElementById("logout").style.display = "block";
+        document.getElementById("login").style.display = "none";
+        let userNameDiv = document.getElementById("userName");
+        //show email as user
+        if (user.displayName) {userNameDiv.innerHTML = user.email;} 
+    }
+    
 }
 /// LOG OUT
-document.getElementById("logoutButton").addEventListener("click", function () {
-    signOut(auth).then(() => {
-        console.log("signed out");
-    }).catch((error) => {
-        console.log("error signing out");
+if(document.getElementById("logoutButton") != undefined){
+    document.getElementById("logoutButton").addEventListener("click", function () {
+        signOut(auth).then(() => {
+            console.log("signed out");
+        }).catch((error) => {
+            console.log("error signing out");
+        });
     });
-});
+}
+
 
 /* --- GOOGLE --- */
-document.getElementById("signInWithGoogle").addEventListener("click", function () {
-    signInWithPopup(auth, googleAuthProvider)
-        .then((result) => {
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            const user = result.user;
-        }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            const email = error.customData.email;
-            const credential = GoogleAuthProvider.credentialFromError(error);
-        });
-});
+if(document.getElementById("signInWithGoogle") != undefined){
+    document.getElementById("signInWithGoogle").addEventListener("click", function () {
+        signInWithPopup(auth, googleAuthProvider)
+            .then((result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                const user = result.user;
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.customData.email;
+                const credential = GoogleAuthProvider.credentialFromError(error);
+            });
+    });
+}
