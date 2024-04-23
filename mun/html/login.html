@@ -297,72 +297,29 @@
             <button id="name-btn" type="submit" onclick="username(event)">SUBMIT</button>
         </div>
 
-        <!-- WORD -->
-        <div id="word-form" class="form">
-            <label for="word">Enter a word:</label>
-            <br>
-            <input type="text" id="word" name="word" autocomplete="off" required></input>
-            <br>
-            <button id="word-btn" type="submit" onclick="word(event)">SUBMIT</button>
-        </div>
-
         <!-- START -->
         <button id="start-btn" type="submit" onclick="start(event)" disabled>START</button>
     </div>
 
     <!-- SCRIPTS -->
     <script>
-        /// WORD
-        var word_input = document.getElementById("word");
-        var word_btn = document.getElementById("word-btn");
-        //active input color
-        word_input.addEventListener('click', function(){
-            word_btn.style.backgroundColor = "hsl(197, 71%, 50%)";
-            word_btn.style.color = "white";
-        });
-        //active button color
-        word_btn.addEventListener('mousedown', function(){
-            word_btn.style.backgroundColor = "white";
-            word_btn.style.color = "skyblue";
-        });
-        function word(event) {
-            //get input
-            const userword = word_input.value;
-            //alert if blank
-            if(userword == ""){alert('Please enter a word');}
-            else {
-                //disable button & input
-                word_input.disabled = true;
-                word_btn.disabled = true;
-                //disable color
-                word_btn.style.backgroundColor = "gray";
-                word_btn.style.color = "white";
-                //enable start button
-                if(document.getElementById("name-btn").disabled == true){
-                    document.getElementById('start-btn').disabled = false;
-                }
-                
-            }
-        }
-
         /// NAME
-        var name_input = document.getElementById("country");
-        var name_btn = document.getElementById("name-btn");
+        let name_input = document.getElementById("country");
+        let name_btn = document.getElementById("name-btn");
         function username(event) {
             //disable button & input
             name_input.disabled = true;
             name_btn.disabled = true;
             //enable start button
-            if(document.getElementById("word-btn").disabled == true){
-                document.getElementById('start-btn').disabled = false;
-            }
-            
+            document.getElementById('start-btn').disabled = false; 
         }
         // START
+        let logout = document.getElementById("logout");
         function start(event) {
-            //redirect
-            let body = document.querySelector('body');
-            body.innerHTML = "Loading...";
+            logout.style.display = 'none'; //hide stuff
+            //add loading text
+            let loading = document.body.appendChild(document.createElement("h1"));
+            loading.innerHTML = "Loading..."
         }
     </script>
     <script src="../scripts/firebase.js" type="module"></script>

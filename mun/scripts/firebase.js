@@ -1,6 +1,6 @@
 /* --- IMPORTS --- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getDatabase, ref, off, onValue, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+import { getDatabase, ref, off, get, child, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 import { getAuth, setPersistence, browserSessionPersistence, signOut, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 //import {reactToFirebase} from "./scene.js";
 
@@ -28,7 +28,7 @@ export function initFirebase(callback) {
     app = initializeApp(firebaseConfig);
     db = getDatabase();
     auth = getAuth();
-    setPersistence(auth, browserSessionPersistence)
+    setPersistence(auth, browserSessionPersistence);
 
     //google login
     googleAuthProvider = new GoogleAuthProvider();
@@ -38,7 +38,6 @@ export function initFirebase(callback) {
         //signed in
         if (user) {
             const uid = user.uid;
-            //console.log("signed in", user);
             callback(user);
             showLogOutButton(user);
         } 
@@ -53,51 +52,21 @@ export function initFirebase(callback) {
     return auth.currentUser;
 }
 
-/* --- CHANGES --- */
-/// ADD
-export function addNewThingToFirebase(folder, data) {
-    const dbRef = ref(db, folder);
-    const newKey = push(dbRef, data).key;
-    return newKey; //useful for later updating
-}
-/// DELETE
-export function deleteFromFirebase(folder, key) {
-    console.log("deleting", folder + '/' + key);
-    const dbRef = ref(db, folder + '/' + key);
-    set(dbRef, null);
-}
-/// CHANGE
-export function setDataInFirebase(dbPath, data) {
-    const dbRef = ref(db, dbPath); //if it doesn't exist, it adds (pushes) with you providing the key
-    set(dbRef, data); //if it does exist, it overwrites
-}
-/// UPDATE
-export function updateJSONFieldInFirebase(folder, key, data) {
-    console.log(folder + '/' + key)
-    const dbRef = ref(db, folder + '/' + key);
-    update(dbRef, data);
-}
-/// GET UPDATES
-export function subscribeToData(folder, callback) {
-    //get callbacks when there are changes either by you locally or others remotely
-    const commentsRef = ref(db, folder + '/');
-    onChildAdded(commentsRef, (data) => {
-        callback("added", data.val(), data.key);
-        //reactToFirebase("added", data.val(), data.key);
+/* --- GOOGLE --- */
+if(document.getElementById("signInWithGoogle") != undefined){
+    document.getElementById("signInWithGoogle").addEventListener("click", function () {
+        signInWithPopup(auth, googleAuthProvider)
+            .then((result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                const user = result.user;
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.customData.email;
+                const credential = GoogleAuthProvider.credentialFromError(error);
+            });
     });
-    onChildChanged(commentsRef, (data) => {
-        callback("changed", data.val(), data.key);
-        //reactToFirebase("changed", data.val(), data.key)
-    });
-    onChildRemoved(commentsRef, (data) => {
-        callback("removed", data.val(), data.key);
-        //reactToFirebase("removed", data.val(), data.key)
-    });
-}
-export function unSubscribeToData(folder) {
-    const oldRef = ref(db, folder + '/');
-    console.log("unsubscribing from", folder, oldRef);
-    off(oldRef);
 }
 
 /* --- BUTTONS --- */
@@ -130,20 +99,71 @@ if(document.getElementById("logoutButton") != undefined){
     });
 }
 
+/* --- CHOSEN --- */
+/// SETTING CHOSEN SONG
+export function trackFirebase(data){
+    const dbRef = ref(getDatabase());
+    //get snapshot of chosen folder
+    get(child(dbRef, `MUN/songs/chosen`)).then((snapshot) => {
+        //if there's already a chosen song, print
+        if (snapshot.exists()) {console.log(snapshot.val());}
+        //if there's no chosen song, set latest song as chosen song
+        else {setDataInFirebase('MUN/songs/chosen', data);}
+    }).catch((error) => { console.error(error);});
+    //redirect
+    window.location.href = "../html/index.html";
+}
 
-/* --- GOOGLE --- */
-if(document.getElementById("signInWithGoogle") != undefined){
-    document.getElementById("signInWithGoogle").addEventListener("click", function () {
-        signInWithPopup(auth, googleAuthProvider)
-            .then((result) => {
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                const user = result.user;
-            }).catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                const email = error.customData.email;
-                const credential = GoogleAuthProvider.credentialFromError(error);
-            });
+  
+/* --- CHANGES --- */
+/// ADD
+export function addNewThingToFirebase(folder, data) {
+    //if new thing added is a song
+    if(folder == "MUN/songs"){trackFirebase(data);} //see if should be set as chosen song
+    
+    const dbRef = ref(db, folder);
+    const newKey = push(dbRef, data).key;
+    return newKey; //useful for later updating
+}
+/// DELETE
+export function deleteFromFirebase(folder, key) {
+    console.log("deleting", folder + '/' + key);
+    const dbRef = ref(db, folder + '/' + key);
+    set(dbRef, null);
+}
+/// CHANGE
+export function setDataInFirebase(dbPath, data) {
+    const dbRef = ref(db, dbPath); //if it doesn't exist, it adds (pushes) with you providing the key
+    set(dbRef, data); //if it does exist, it overwrites
+    
+}
+/// UPDATE
+export function updateJSONFieldInFirebase(folder, key, data) {
+    const dbRef = ref(db, folder + '/' + key);
+    update(dbRef, data);
+    console.log(dbRef, data)
+}
+/// GET UPDATES
+export function subscribeToData(folder, callback) {
+    //get callbacks when there are changes either by you locally or others remotely
+    const commentsRef = ref(db, folder + '/');
+    onChildAdded(commentsRef, (data) => {
+        callback("added", data.val(), data.key);
+        //reactToFirebase("added", data.val(), data.key);
+    });
+    onChildChanged(commentsRef, (data) => {
+        callback("changed", data.val(), data.key);
+        //reactToFirebase("changed", data.val(), data.key)
+    });
+    onChildRemoved(commentsRef, (data) => {
+        callback("removed", data.val(), data.key);
+        //reactToFirebase("removed", data.val(), data.key)
     });
 }
+export function unSubscribeToData(folder) {
+    const oldRef = ref(db, folder + '/');
+    console.log("unsubscribing from", folder, oldRef);
+    off(oldRef);
+}
+
+

@@ -4,17 +4,17 @@ import * as LANG from './language.js';
 
 /* ----------- VARIABLES -----------*/
 //scene
-let camera, scene, scene_screen, renderer, color;
+let camera, scene, scene_screen, renderer;
 const textbox = document.getElementById('textbox');
 //json
 let thingsThatNeedUpdating = [];
 let myObjectsByThreeID = {}; //convert three.js to JSON 
 let myObjectsByFirebaseKey = {}; //convert firebase key to JSON
 let new_lang;
+
 //game
-let word_bank = [];
 let user_bank = [];
-let chosen_word;
+var chosen_word;
 
 //mouse
 let mouseDownX = 0, mouseDownY = 0;
@@ -28,68 +28,42 @@ const static_material = new THREE.MeshBasicMaterial({opacity: 0, transparent: tr
 const mesh_static = new THREE.Mesh(static_geometry, static_material);
 mesh_static.position.set(-5,0,-5);
 
+//user
+let user_color, user_key;
+
 //call functions
 initHTML();
 init3D();
-recall();
-FB.initFirebase(function (user) {
-    if (user) {
-        FB.subscribeToData("MUN/" + user.uid + "/words", reactToFirebase);
-        FB.subscribeToData("MUN/chosen", reactToFirebase);
-    } else {
-        console.log('no user');
-    }
-});
 
 /* ----------- FIREBASE -----------*/
-/// USERNAME
-let user_key = localStorage.getItem("key");
-let user_country = localStorage.getItem("country");
-let user_color = LANG.matchLanguage('nation', user_country);
-//add user name & color to firebase
-const user_data = {color: user_color};
-//add to firebase
-FB.setDataInFirebase("MUN/" + user_key + "/color", user_color);
-
+/// INIT
+FB.initFirebase(function (user) {
+    if (user) {
+        user_key = user.uid;
+        FB.subscribeToData("MUN/" + user.uid + "/words", reactToFirebase);
+        FB.subscribeToData("MUN/songs/chosen", getChosen);
+    } else {console.log('no user');}
+});
 
 /// WORD
 let word = localStorage.getItem("word");
+user_color = localStorage.getItem("color");
+console.log(user_color);
 //translate word to nation's lang
 let word_lang = LANG.matchLanguage('color', user_color);
 LANG.translate(word, word_lang)
     .then(translatedText => {
         //add translated word to firebase
         const word_data = { type: "word", text: translatedText, lang: word_lang, eng: word};
-       // FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
+       //FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
 })
 
-/// CHOSEN WORD
-/*
-LANG.word()
-    .then(fetchWord => {
-        //add translated word to firebase
-        console.log(fetchWord);
-})
-*/
+
 /// FIREBASE CHANGE
 export function reactToFirebase(reaction, data, key){
-    console.log(data);
     //if something added
     if(reaction === "added"){
         switch(data.type){
-            /// CHOSEN WORD
-            case "word":
-                /*
-                //push to word bank
-                word_bank.push(data.text);
-                
-                //get random word from word bank
-                let random_num = Math.floor(Math.random() * word_bank.length)
-                chosen_word = word_bank[random_num];
-                //add to firebase & array
-                FB.setDataInFirebase("MUN/chosen", chosen_word);
-                */
-                break;
             /// NEW TEXT
             case "objects":
                 //console.log('new text');
@@ -108,11 +82,28 @@ export function reactToFirebase(reaction, data, key){
     else if(reaction === "removed"){console.log(reaction);}
 }
 
-function recall() {
-    //console.log("recall");
-   //FB.subscribeToData('objects');
-    //FB.subscribeToData('words');
+/// GET CHOSEN WORD
+function getChosen(reaction, data, key){
+    //console.log(LANG.translate(data, localStorage.getItem("language")))
+    LANG.translate(data, localStorage.getItem("language"))
+    .then(translatedText => {
+        //add translated word to firebase
+        console.log(translatedText);
+       //FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
+       chosen_word = translatedText;
+})
+    
+    //show chosen word
+    let chosen_text = document.getElementById("chosen-word");
+    chosen_text.innerHTML = chosen_word;
+
+    const words = data.split(' by ');
+    let title = words[0];
+    let artist = words[1];
+    console.log(title);
 }
+
+
 
 /* ----------- 3D -----------*/
 /// 3D SCENE

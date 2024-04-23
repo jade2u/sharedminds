@@ -71,7 +71,6 @@ export function matchLanguage(data, name){
         if(data == "color"){
             var data_array = lang_array[i].color;
             if (data_array && data_array.includes(name)) {
-                //console.log(lang_array[i].name);
                 return lang_array[i].code;
             }
         }
