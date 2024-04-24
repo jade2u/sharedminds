@@ -33,15 +33,36 @@
 </head>
 
 <body>
-    <h1 id="chosen-word"></h1>
+    <div id="login">
+        <button id="start-btn" type="submit" onclick="start(event)">START</button>
+        
+    </div>
+    <div id="game">
+        <h1 id="chosen-word"></h1>
+        <input id="textbox" autocomplete="off"></input>
+        
+       
+    </div>
 
-    <input id="textbox" autocomplete="off"></input>
     <script>
         document.getElementById('textbox').setAttribute('placeholder', localStorage.getItem("country") + " says...");
+        function start(event) {
+            //show game
+            document.getElementById('game').style.display = 'block';
+            //hide login
+            document.getElementById('login').style.display = 'none';
+            //add scene script
+            let scene = document.createElement('script');
+            scene.setAttribute("src", "../scripts/scene.js");
+            scene.setAttribute("type", "module");
+            document.querySelector('body').appendChild(scene);
+        }
     </script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
     <script src="../scripts/language.js" type="module"></script>
-    <script src="../scripts/scene.js" type="module"></script>
+    
     <script src="../scripts/firebase.js" type="module"></script>
 </body>
 

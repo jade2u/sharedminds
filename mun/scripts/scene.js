@@ -91,11 +91,12 @@ function getChosen(reaction, data, key){
         console.log(translatedText);
        //FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
        chosen_word = translatedText;
-})
-    
-    //show chosen word
+       //show chosen word
     let chosen_text = document.getElementById("chosen-word");
     chosen_text.innerHTML = chosen_word;
+})
+    
+    
 
     const words = data.split(' by ');
     let title = words[0];

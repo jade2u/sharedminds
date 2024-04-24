@@ -23,7 +23,6 @@ export async function word(){
 
 }
 
-
 export async function translate(input, lang) {
     //console.log(input + " " + lang);
     const url = 'https://text-translator2.p.rapidapi.com/translate';
@@ -74,7 +73,6 @@ export function matchLanguage(data, name){
                 return lang_array[i].code;
             }
         }
-
         //getting color from nation
         if (data == "nation"){
             var data_array = lang_array[i].nation;
