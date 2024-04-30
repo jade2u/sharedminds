@@ -17,7 +17,7 @@ const firebaseConfig = {
   };
 
 const app = initializeApp(firebaseConfig);
-let appName = "MUN";
+let appName = "week5";
 const db = getDatabase();
 
 
@@ -31,7 +31,7 @@ export function addNewThingToFirebase(folder, data) {
     if(folder=="words"){
         let word_bank = [];
         //get the word
-        get(child(ref(db), `MUN/words/${newKey}`)).then((snapshot) => {
+        get(child(ref(db), `week5/words/${newKey}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 //add to array
                 word_bank.push(snapshot.val());
