@@ -74,44 +74,21 @@
                 //HORZIONTAL
                 if(Math.abs(event.deltaX) > Math.abs(event.deltaY)){
                     //left
-                    if(event.deltaX > 0){ 
-                        //stop at edge
-                        if(onScreen(camera3D).x < 10){
-                            camera3D.rotation.y == 10;
-                        }
-                        //move
-                        else {camera3D.rotation.y -= 0.00005;}
+                    if(event.deltaX > 0){ camera3D.rotation.y -= 0.00005;
+
                     }
                     //right
-                    else if(event.deltaX < 0){
-                        //stop at edge
-                        if(onScreen(camera3D).x > (window.innerWidth - 10)){
-                            camera3D.rotation.y == (window.innerWidth - 10);
-                        }
-                        //move
-                        else {camera3D.rotation.y += 0.00005;}
+                    else if(event.deltaX < 0){ camera3D.rotation.y += 0.00005;
                     }
                     camera3D.rotation.x = camera3D.rotation.x; //keep horizontal same
                 }
                 //VERTICAL
                 else if(Math.abs(event.deltaY) > Math.abs(event.deltaX)){
                     //up
-                    if(event.deltaY > 0){
-                        //stop at top
-                        if(onScreen(camera3D).y < 10){
-                            camera3D.rotation.x == 10;
-                        }
-                        //move
-                        else {camera3D.rotation.x -= 0.00005;}
+                    if(event.deltaY > 0){ camera3D.rotation.x -= 0.00005;
                     }
                     //down
-                    else if(event.deltaY < 0){
-                        //stop at bottom
-                        if(onScreen(camera3D).y > (window.innerHeight - 10)){
-                            camera3D.rotation.x == window.innerHeight - 10;
-                        }
-                        //move
-                        else {camera3D.rotation.x += 0.00005;}
+                    else if(event.deltaY < 0){camera3D.rotation.x += 0.00005;
                     }
                     camera3D.rotation.y = camera3D.rotation.y;  //keep vertical same
                 }

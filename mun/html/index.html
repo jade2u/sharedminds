@@ -33,6 +33,7 @@
 </head>
 
 <body>
+
     <div id="login">
         <button id="start-btn" type="submit" onclick="start(event)">START</button>
         
@@ -43,6 +44,8 @@
         
        
     </div>
+
+    
 
     <script>
         document.getElementById('textbox').setAttribute('placeholder', localStorage.getItem("country") + " says...");
@@ -58,12 +61,12 @@
             document.querySelector('body').appendChild(scene);
         }
     </script>
-
-
+    
     <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
     <script src="../scripts/language.js" type="module"></script>
     
     <script src="../scripts/firebase.js" type="module"></script>
+
 </body>
 
 </html>
