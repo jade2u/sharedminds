@@ -18,7 +18,7 @@ const authEndpoint = "https://accounts.spotify.com/authorize";
 
 // Replace with your app's client ID, redirect URI and desired scopes
 const clientId = "2e7ac57f643a4dcf8e59658b1c63df07";
-const redirectUri = "https://jade2u.github.io/sharedminds/";
+const redirectUri = "https://jade2u.github.io/sharedminds/mun/test/test.html";
 
 const scopes = [
   "streaming",
