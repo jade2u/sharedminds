@@ -2,7 +2,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getDatabase, ref, off, get, child, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 import { getAuth, setPersistence, browserSessionPersistence, signOut, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-//import {reactToFirebase} from "./scene.js";
+import * as EMBED from './embeddings.js';
+import {language} from './language.js';
 
 /* --- VARS --- */
 let db, auth, app;
@@ -13,7 +14,7 @@ let googleAuthProvider;
 export function getUser() {
     return auth.currentUser;
 }
-/// INIT 
+/// AUTHORIZE 
 export function initFirebase(callback) {
     const firebaseConfig = {
         apiKey: "AIzaSyAIChKsZULkKP_-_SkEfJcSLdpYz6cVQqM",
@@ -39,21 +40,20 @@ export function initFirebase(callback) {
         if (user) {
             const uid = user.uid;
             callback(user);
-            showLogOutButton(user);
         } 
         //signed out
         else {
             console.log("signed out");
-            showLoginButtons();
+            showStart();
             callback(null);
         }
     });
     //get user
     return auth.currentUser;
 }
-
-/* --- GOOGLE --- */
-if(document.getElementById("signInWithGoogle") != undefined){
+/// BUTTON
+initFirebase(function (user) {
+    //sign in
     document.getElementById("signInWithGoogle").addEventListener("click", function () {
         signInWithPopup(auth, googleAuthProvider)
             .then((result) => {
@@ -63,40 +63,31 @@ if(document.getElementById("signInWithGoogle") != undefined){
             }).catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                const email = error.customData.email;
+                console.log(error);
+                //const email = error.customData.email;
                 const credential = GoogleAuthProvider.credentialFromError(error);
-            });
+                console.log(credential);
+            }
+        );
     });
-}
+    //when user authorized
+    if(user){
+        //show game
+        document.getElementById('game').style.display = 'block';
+        //hide login
+        document.getElementById('login').style.display = 'none';
+        //add scene script
+        let scene = document.createElement('script');
+        scene.setAttribute("src", "../scripts/scene.js");
+        scene.setAttribute("type", "module");
+        document.querySelector('body').appendChild(scene);
+    }
+});
 
 /* --- BUTTONS --- */
-/// LOG IN
-function showLoginButtons() {
+function showStart() {
     //only show log in button
-    document.getElementById("login").style.display = "block";
-    document.getElementById("logout").style.display = "none";
-}
-/// LOGGED IN
-function showLogOutButton(user) {
-    //only show log out button
-    if(document.getElementById("logoutButton") != undefined){
-        document.getElementById("logout").style.display = "block";
-        document.getElementById("login").style.display = "none";
-        let userNameDiv = document.getElementById("userName");
-        //show email as user
-        if (user.displayName) {userNameDiv.innerHTML = user.email;} 
-    }
-    
-}
-/// LOG OUT
-if(document.getElementById("logoutButton") != undefined){
-    document.getElementById("logoutButton").addEventListener("click", function () {
-        signOut(auth).then(() => {
-            console.log("signed out");
-        }).catch((error) => {
-            console.log("error signing out");
-        });
-    });
+    document.getElementById('start-btn').disabled = false; 
 }
 
 /* --- CHOSEN --- */
@@ -104,23 +95,57 @@ if(document.getElementById("logoutButton") != undefined){
 export function trackFirebase(data){
     const dbRef = ref(getDatabase());
     //get snapshot of chosen folder
-    get(child(dbRef, `MUN/songs/chosen`)).then((snapshot) => {
-        //if there's already a chosen song, print
-        if (snapshot.exists()) {console.log(snapshot.val());}
-        //if there's no chosen song, set latest song as chosen song
-        else {setDataInFirebase('MUN/songs/chosen', data);}
+    get(child(dbRef, `MUN/songs`)).then((snapshot) => {
+
+        //if there's already 5 songs
+        if (snapshot.size >= 5) {
+            var chosen;
+            //get 1st song
+            snapshot.forEach(function(urlSnapshot) {
+                if (!chosen) {
+                    chosen = urlSnapshot;
+                    //set as chosen
+                    //in firebase
+                    setDataInFirebase("MUN/songs/chosen", { 
+                        key: urlSnapshot.key,
+                        lang: "zh-CN",
+                        //lang: urlSnapshot.val().lang,
+                        song: urlSnapshot.val().song
+                    });
+                }
+            });
+            
+        }
+        //if there's less than 5 songs
+        else if (snapshot.size <5) {
+            console.log(snapshot.size);
+            //get random languages
+            var lang_array = language["languages"];
+            let n = 5;
+            let random = lang_array.sort(() => .5 - Math.random()).slice(0,n);
+            console.log(random);
+            //get songs
+            EMBED.askForWords() 
+            .then(reply_arr => {
+                //add them to firebase    
+                for(var i=0; i<reply_arr.length; i++){
+                    addNewThingToFirebase("MUN/songs", {
+                        song: reply_arr[i],
+                        lang: lang_array[i].code
+                    });
+                }
+            })
+        }
     }).catch((error) => { console.error(error);});
-    //redirect
-    window.location.href = "../html/index.html";
 }
+
 
   
 /* --- CHANGES --- */
 /// ADD
 export function addNewThingToFirebase(folder, data) {
     //if new thing added is a song
-    if(folder == "MUN/songs"){trackFirebase(data);} //see if should be set as chosen song
-    
+    //if(folder == "MUN/songs"){trackFirebase(data);} //see if should be set as chosen song
     const dbRef = ref(db, folder);
     const newKey = push(dbRef, data).key;
     return newKey; //useful for later updating
@@ -128,6 +153,10 @@ export function addNewThingToFirebase(folder, data) {
 /// DELETE
 export function deleteFromFirebase(folder, key) {
     console.log("deleting", folder + '/' + key);
+    if(key == "chosen"){
+        console.log("repicking");
+        trackFirebase();
+    }
     const dbRef = ref(db, folder + '/' + key);
     set(dbRef, null);
 }

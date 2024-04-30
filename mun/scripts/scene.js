@@ -2,34 +2,28 @@ import * as THREE from 'three';
 import * as FB from './firebase.js';
 import * as LANG from './language.js';
 
+
 /* ----------- VARIABLES -----------*/
 //scene
 let camera, scene, scene_screen, renderer;
-const textbox = document.getElementById('textbox');
 //json
 let thingsThatNeedUpdating = [];
 let myObjectsByThreeID = {}; //convert three.js to JSON 
 let myObjectsByFirebaseKey = {}; //convert firebase key to JSON
 let new_lang;
-
 //game
-let user_bank = [];
-var chosen_word;
-
+let chosen_song, chosen_lang, chosen_key;
+const hello = document.getElementById('hello');
+const chosen_text = document.getElementById("chosen-word");
 //mouse
 let mouseDownX = 0, mouseDownY = 0;
 let lon = -90, mouseDownLon = 0;
 let lat = 0, mouseDownLat = 0;
 let isUserInteracting = false;
-
-//static mesh
-const static_geometry = new THREE.PlaneGeometry(1, 1);
-const static_material = new THREE.MeshBasicMaterial({opacity: 0, transparent: true});
-const mesh_static = new THREE.Mesh(static_geometry, static_material);
-mesh_static.position.set(-5,0,-5);
-
 //user
-let user_color, user_key;
+let user_pic, user_key;
+var cancel; 
+var seconds = 0;
 
 //call functions
 initHTML();
@@ -39,69 +33,96 @@ init3D();
 /// INIT
 FB.initFirebase(function (user) {
     if (user) {
+        FB.setDataInFirebase("MUN/" + user.uid, {
+            name: user.displayName,
+            email: user.email, 
+            photo: user.photoURL
+        });
+        user_pic = user.photoURL;
         user_key = user.uid;
-        FB.subscribeToData("MUN/" + user.uid + "/words", reactToFirebase);
+        
+        FB.subscribeToData("MUN//pin", reactToFirebase);
         FB.subscribeToData("MUN/songs/chosen", getChosen);
+        FB.subscribeToData('MUN/songs', reactToFirebase);
+
+        FB.trackFirebase();
+        let avi = document.getElementById("avi");
+        avi.setAttribute("src", user_pic);
     } else {console.log('no user');}
 });
-
-/// WORD
-let word = localStorage.getItem("word");
-user_color = localStorage.getItem("color");
-console.log(user_color);
-//translate word to nation's lang
-let word_lang = LANG.matchLanguage('color', user_color);
-LANG.translate(word, word_lang)
-    .then(translatedText => {
-        //add translated word to firebase
-        const word_data = { type: "word", text: translatedText, lang: word_lang, eng: word};
-       //FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
-})
-
 
 /// FIREBASE CHANGE
 export function reactToFirebase(reaction, data, key){
     //if something added
     if(reaction === "added"){
-        switch(data.type){
-            /// NEW TEXT
-            case "objects":
-                //console.log('new text');
-                createNewText(data, key);
-                break;
-            /// NEW USER
-            case "user":
-                user_bank.push(data.text);
-                //console.log(user_bank.length);
-                break;
-            default:
-                break;
+        if(data.key == "chosen"){
+            getChosen(data);
         }
+        if(data.type == "objects"){
+            //win
+            console.log(data.lang);
+            if(chosen_lang == data.lang){
+                console.log('win');
+                //show
+                hello.style.backgroundColor = "limegreen";
+                hello.style.color = "white";
+                chosen_text.style.backgroundColor = "limegreen";
+                chosen_text.style.color = "white";
+                cancel = setInterval(incrementSeconds, 1000);
+                if(seconds == 2){clearInterval(cancel);}
+            }
+        }
+        
+        
     }
-    else if(reaction === "changed"){console.log(reaction);}
-    else if(reaction === "removed"){console.log(reaction);}
+    else if(reaction === "changed"){
+        console.log(reaction);}
+    else if(reaction === "removed"){
+        if(data.key == "chosen"){
+            console.log("repicking");
+            trackFirebase();
+            getChosen(data);
+        }
+        
+    }
 }
 
-/// GET CHOSEN WORD
-function getChosen(reaction, data, key){
-    //console.log(LANG.translate(data, localStorage.getItem("language")))
-    LANG.translate(data, localStorage.getItem("language"))
-    .then(translatedText => {
-        //add translated word to firebase
-        console.log(translatedText);
-       //FB.addNewThingToFirebase("MUN/" + user_key + "/words", word_data);
-       chosen_word = translatedText;
-       //show chosen word
-    let chosen_text = document.getElementById("chosen-word");
-    chosen_text.innerHTML = chosen_word;
-})
-    
-    
+function incrementSeconds() {
+    seconds += 1;
+    console.log(seconds);
+    if(seconds == 2){
+        FB.deleteFromFirebase("MUN/songs", "chosen");
+        FB.deleteFromFirebase("MUN/songs", chosen_key);
+        hello.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+        hello.style.color = "black";
+        chosen_text.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+        chosen_text.style.color = "black";
+        clearInterval(cancel);
+    }
+}
 
-    const words = data.split(' by ');
-    let title = words[0];
-    let artist = words[1];
-    console.log(title);
+
+
+/// GET CHOSEN WORD
+function getChosen(reaction,data, key){
+    if(reaction == "added"){
+        console.log(data);
+        if(key == "key"){chosen_key = data;}
+        if (key == "song"){chosen_song = data;}
+        if (key == "lang"){chosen_lang = data;}
+        //get lang & song
+        if((chosen_key!=undefined) && (chosen_song!=undefined)){
+            //show translation of song
+            LANG.translate(chosen_song, chosen_lang)
+            .then(translatedText => {
+                chosen_text.innerHTML = translatedText;
+            })
+            
+            //show eng of song
+            hello.innerHTML = chosen_song;
+        }
+    }
+    
 }
 
 
@@ -120,40 +141,20 @@ function init3D() {
     //bg
     let bgGeometery = new THREE.SphereGeometry(1000, 60, 40);
     bgGeometery.scale(-1, 1, 1);
-    scene.add(mesh_static);
     //pic
     let panotexture = new THREE.TextureLoader().load("../map.png");
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
 
-    let planeMesh;
-    //load texture and initialize planeMesh, textureData and renderTargetTexture
-    new THREE.TextureLoader().load("../map.png", function (texture) {
-        planeMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(texture.image.width, texture.image.height),
-        new THREE.MeshBasicMaterial({ map: texture })
-        );
-    })
-    scene.add(planeMesh);
-
     //move
     moveCameraWithMouse();
     camera.position.z = 0;
     animate();
 }
-/// ANIMATE
-function animate() {
-    for (let i = 0; i < thingsThatNeedUpdating.length; i++) {
-        thingsThatNeedUpdating[i].texture.needsUpdate = true;
-    }
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-}
 /// 3D POSITION
 function find3DCoornatesInFrontOfCamera(distance, mouse) {
     let vector = new THREE.Vector3();
-
     vector.set(
         (mouse.x / window.innerWidth) * 2 - 1,
         - (mouse.y / window.innerHeight) * 2 + 1,
@@ -163,11 +164,19 @@ function find3DCoornatesInFrontOfCamera(distance, mouse) {
     vector.multiplyScalar(distance)
     return vector;
 }
+/// ANIMATE
+function animate() {
+    for (let i = 0; i < thingsThatNeedUpdating.length; i++) {
+        thingsThatNeedUpdating[i].texture.needsUpdate = true;
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}
+
 
 /* ----------- HTML -----------*/
 function initHTML() {
-    
-    // three.js format
+    /// THREE.JS
     const THREEcontainer = document.createElement("div");
     THREEcontainer.setAttribute("id", "THREEcontainer");
     document.body.appendChild(THREEcontainer);
@@ -177,31 +186,91 @@ function initHTML() {
     THREEcontainer.style.width = "100%";
     THREEcontainer.style.height = "100%";
     THREEcontainer.style.zIndex = "1";
-    
-    // draw textbox
-    textbox.addEventListener("keydown", function (e) {
+
+    ///CHANGE TEXT
+    document.addEventListener("keydown", function (e) {
         if (e.key === "Enter") { //when enter pressed
             //get textbox location
-            const textboxRect = textbox.getBoundingClientRect();
+            const textboxRect = hello.getBoundingClientRect();
             const mouse = { x: textboxRect.right - (textboxRect.width / 2), y: textboxRect.top };
             const pos = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
 
-            //get translated text
+            //get color & language
             colorCast(mouse);
-
-            LANG.translate(textbox.value, new_lang)
+            //get translation
+            LANG.translate(hello.innerHTML, new_lang)
             .then(translatedText => {
+                //change text
+                hello.innerHTML = translatedText;
                 //add translated to firebase
-                const data = { type: "objects", position: { x: pos.x, y: pos.y, z: pos.z }, text: textbox.value, translation: translatedText};
-
-                FB.addNewThingToFirebase("MUN/" + user_key + "/words/", data);
+                const data = { 
+                    type: "objects", 
+                    position: { x: pos.x, y: pos.y, z: pos.z }, 
+                    lang: new_lang,
+                    pic: user_pic
+                };
+                FB.addNewThingToFirebase("MUN/pin/", data);
             })
             
-            //draw circle & new text
-            //addP5To3D(mouse.x, mouse.y);
+            //stamp
+            addP5To3D(mouse.x, mouse.y);
         }
     });
 }
+
+
+/* ----------- P5 -----------*/
+/// STAMP
+function createP5Sketch(w, h) {
+    let sketch = function (p) {
+        let myCanvas;
+        let img;
+        p.getCanvas = function () {
+            return myCanvas;
+        }
+        p.setup = function () {
+            img = p.loadImage(user_pic);
+            myCanvas = p.createCanvas(w, h);
+        };
+        p.draw = function () {
+            this.x = p.width / 2;
+            this.y = p.height / 2;
+            this.alpha = 255;
+            p.noStroke();
+            p.fill(255, 0, 0, 100);
+            p.image(img, this.x-5, this.y-10, 10, 10);
+        };
+    };
+    return new p5(sketch);
+}
+
+/// ADD SKETCH TO 3D
+function addP5To3D(_x, _y) {
+    //get canvas
+    let newP5 = createP5Sketch(200, 200);
+    let p5Canvas = newP5.getCanvas(); 
+    let canvas = p5Canvas.elt; 
+    //add to texture
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthTest: false });
+    let geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
+    let mesh = new THREE.Mesh(geo, material);
+    mesh.scale.set(10, 10, 10);
+
+    //position
+    const mouse = { x: _x, y: _y };
+    const pos = find3DCoornatesInFrontOfCamera(300 - camera.fov * 3, mouse);
+    mesh.position.x = pos.x;
+    mesh.position.y = pos.y;
+    mesh.position.z = pos.z;
+    let thisObject = { canvas: canvas, mesh: mesh, texture: texture, p5Canvas: p5Canvas };
+
+    thingsThatNeedUpdating.push(thisObject);
+    mesh.lookAt(0, 0, 0);
+    scene.add(mesh);
+}
+
 /* ----------- RAYCASTER -----------*/
 function colorCast(pos){
     //setup raycaster & plane mesh
@@ -218,17 +287,10 @@ function colorCast(pos){
     mouse.y =-((pos.y-renderer.domElement.offsetTop)/renderer.domElement.height)*2+1;
     mouse.x=parseInt(window.innerWidth/2+mouse.x*window.innerWidth/2);
     mouse.y=parseInt(window.innerHeight/2+mouse.y*window.innerHeight/2);
-
     //render stuff
     let renderTargetTexture = new THREE.WebGLRenderTarget(
         window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat, type: THREE.FloatType }
     );
-    const materialScreen = new THREE.ShaderMaterial({
-        uniforms: { 'tDiffuse': { value: renderTargetTexture.texture } },
-        vertexShader: document.getElementById( 'vertexShader' ).textContent,
-        fragmentShader: document.getElementById( 'fragment_shader_screen' ).textContent,
-        depthWrite: false
-    });
 
     renderer.clear();
     renderer.setRenderTarget(renderTargetTexture);
@@ -245,61 +307,7 @@ function colorCast(pos){
     let map_color = "("+r+","+g+","+b+")";
     //match map color to language
     new_lang = LANG.matchLanguage('color', map_color);
-
-    console.log("color: " + map_color);
-}
-
-/* ----------- TEXT -----------*/
-/// NEW 
-function createNewText(data, firebaseKey) {
-    // canvas
-    let canvas = document.createElement("canvas");
-    canvas.width = 512;
-    canvas.height = 512;
-    //material
-    let texture = new THREE.Texture(canvas);
-    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide, alphaTest: 0.5 });
-    let geo = new THREE.PlaneGeometry(1, 1);
-    let mesh = new THREE.Mesh(geo, material);
-    mesh.lookAt(0, 0, 0);
-    mesh.scale.set(10, 10, 10);
-    scene.add(mesh);
-    let text_msg = data.translation;
-    let posInWorld = data.position;
-    //add to firebase
-    let thisObject = { type: "text", firebaseKey: firebaseKey, threeID: mesh.uuid, text: text_msg, position: posInWorld, canvas: canvas, mesh: mesh, texture: texture };
-    myObjectsByThreeID[mesh.uuid] = thisObject;
-    myObjectsByFirebaseKey[firebaseKey] = thisObject;
-    //draw
-    redrawText(thisObject);
-
-}
-/// ADD TO 3D
-function redrawText(thisObject) {
-    //console.log(thisObject.text)
-    //position
-    thisObject.mesh.position.x = thisObject.position.x;
-    thisObject.mesh.position.y = thisObject.position.y;
-    thisObject.mesh.position.z = thisObject.position.z;
-    thisObject.mesh.lookAt(0, 0, 0);
-
-    let canvas = thisObject.canvas;
-    let context = canvas.getContext("2d");
-    
-    thisObject.texture.needsUpdate = true;
-
-    let fontSize = Math.max(camera.fov / 10, 15);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    //if chosen word guessed, make box green
-    if (thisObject.text == chosen_word){
-        context.fillStyle = 'green'; 
-        console.log(chosen_word);
-    }
-    else {context.fillStyle = "rgb" + user_color;}
-    //textbox
-    context.font = fontSize + "pt Andale Mono";
-    context.fillText(thisObject.text, canvas.width / 2, canvas.height / 2);
+    if(new_lang!=undefined){hello.style.color = "rgb" + map_color + "";}
     
 }
 
@@ -319,6 +327,7 @@ function moveCameraWithMouse() {
 }
 /// DOUBLE CLICK
 function div3DDoubleClick(event) {
+    //addP5To3D(event.clientX, event.clientY);
 }
 /// CLICK
 function div3DMouseDown(event) {

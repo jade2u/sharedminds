@@ -1,28 +1,4 @@
-export async function word(){
-    let fetchWord = fetch('https://random-word-api.herokuapp.com/word');
-    fetchWord.then(res =>
-        res.json()).then(d => {
-            console.log(d);
-            let word = d;
-            return word;
-    });
-    const dict_url = ('https://api.dictionaryapi.dev/api/v2/entries/en/' + word);
-    //console.log(url.href);
-    // API for get requests
-    let fetchDict = fetch(dict_url);
-
-    // FetchRes is the promise to resolve
-    // it by using.then() method
-    fetchDict.then(res =>
-        res.json()).then(d => {
-            const po_speech = d[0].meanings[0].partOfSpeech;
-            const definition = d[0].meanings[0].definitions[0].definition;
-            console.log(po_speech, definition);
-            return po_speech, definition;
-    })
-
-}
-
+/* TRANSLATE */
 export async function translate(input, lang) {
     //console.log(input + " " + lang);
     const url = 'https://text-translator2.p.rapidapi.com/translate';
@@ -39,15 +15,12 @@ export async function translate(input, lang) {
             text: input
         })
     };
-
     try {
         const response =  await fetch(url, options);
         const result = await response.json();
-
-        // Check if the status is success and if translatedText exists in the data object
+        //if successful, get translation
         if (result.status === 'success' && result.data && result.data.translatedText) {
             const translatedText = result.data.translatedText;
-            //console.log(translatedText);
             return translatedText; // Return translated text
         } else {
             throw new Error('Unable to get translated text');
@@ -60,31 +33,31 @@ export async function translate(input, lang) {
     
 }
 
+/* MATCH */
 export function matchLanguage(data, name){
     //get array
     var lang_array = language["languages"];
-
     //go through whole array
     for (var i = 0; i < lang_array.length; i++) {
-        //getting lang from color
+        /// COLOR -> CODE
         if(data == "color"){
             var data_array = lang_array[i].color;
             if (data_array && data_array.includes(name)) {
                 return lang_array[i].code;
             }
         }
-        //getting color from nation
-        if (data == "nation"){
-            var data_array = lang_array[i].nation;
+        /// CODE -> LANGUAGE
+        if(data == "code"){
+            var data_array = lang_array[i].code;
             if (data_array && data_array.includes(name)) {
-                return lang_array[i].color;
+                return lang_array[i].name;
             }
         }
     } 
 }
 
 /* LANGUAGE ARRAY */
-var language = {
+export var language = {
     "description": "",
     "languages": [
 // --- AFRICA
