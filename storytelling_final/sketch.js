@@ -32,7 +32,7 @@ let times = [
 var time = {
   value: '',
   letMeKnow() {
-    console.log(this.now);
+    //console.log(this.now);
     //make text
     if(this.now == times[line_counter]){
       new_line(pics, line_counter, 2 + this.now/5);
@@ -71,6 +71,7 @@ var time = {
 var seconds = 0;
 var start_counter = setInterval((function(){
   seconds +=1;
+  console.log(time.now);
   time.now = seconds;
 }), 1000);
 
