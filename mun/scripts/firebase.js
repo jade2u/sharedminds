@@ -78,7 +78,7 @@ initFirebase(function (user) {
         document.getElementById('login').style.display = 'none';
         //add scene script
         let scene = document.createElement('script');
-        scene.setAttribute("src", "../scripts/scene.js");
+        scene.setAttribute("src", "scripts/scene.js");
         scene.setAttribute("type", "module");
         document.querySelector('body').appendChild(scene);
     }
