@@ -96,9 +96,8 @@ export function trackFirebase(data){
     const dbRef = ref(getDatabase());
     //get snapshot of chosen folder
     get(child(dbRef, `MUN/songs`)).then((snapshot) => {
-
         //if there's already 5 songs
-        if (snapshot.size >= 5) {
+        if (snapshot.size > 0) {
             var chosen;
             //get 1st song
             snapshot.forEach(function(urlSnapshot) {
@@ -108,8 +107,7 @@ export function trackFirebase(data){
                     //in firebase
                     setDataInFirebase("MUN/songs/chosen", { 
                         key: urlSnapshot.key,
-                        lang: "zh-CN",
-                        //lang: urlSnapshot.val().lang,
+                        lang: urlSnapshot.val().lang,
                         song: urlSnapshot.val().song
                     });
                 }
@@ -117,7 +115,7 @@ export function trackFirebase(data){
             
         }
         //if there's less than 5 songs
-        else if (snapshot.size <5) {
+        else if (snapshot.size == 0) {
             console.log(snapshot.size);
             //get random languages
             var lang_array = language["languages"];
@@ -130,6 +128,7 @@ export function trackFirebase(data){
                 //add them to firebase    
                 for(var i=0; i<reply_arr.length; i++){
                     addNewThingToFirebase("MUN/songs", {
+                        type: "song",
                         song: reply_arr[i],
                         lang: lang_array[i].code
                     });
@@ -153,10 +152,7 @@ export function addNewThingToFirebase(folder, data) {
 /// DELETE
 export function deleteFromFirebase(folder, key) {
     console.log("deleting", folder + '/' + key);
-    if(key == "chosen"){
-        console.log("repicking");
-        trackFirebase();
-    }
+    if(key == "chosen"){}
     const dbRef = ref(db, folder + '/' + key);
     set(dbRef, null);
 }

@@ -41,11 +41,11 @@ FB.initFirebase(function (user) {
         user_pic = user.photoURL;
         user_key = user.uid;
         
-        FB.subscribeToData("MUN//pin", reactToFirebase);
+        FB.subscribeToData("MUN/pin", reactToFirebase);
         FB.subscribeToData("MUN/songs/chosen", getChosen);
         FB.subscribeToData('MUN/songs', reactToFirebase);
-
         FB.trackFirebase();
+        
         let avi = document.getElementById("avi");
         avi.setAttribute("src", user_pic);
     } else {console.log('no user');}
@@ -55,12 +55,12 @@ FB.initFirebase(function (user) {
 export function reactToFirebase(reaction, data, key){
     //if something added
     if(reaction === "added"){
-        if(data.key == "chosen"){
+        if(data.type == "songs"){
             getChosen(data);
         }
-        if(data.type == "objects"){
-            //win
+        if(data.type == "pins") {
             console.log(data.lang);
+            //win
             if(chosen_lang == data.lang){
                 console.log('win');
                 //show
@@ -80,24 +80,27 @@ export function reactToFirebase(reaction, data, key){
     else if(reaction === "removed"){
         if(data.key == "chosen"){
             console.log("repicking");
-            trackFirebase();
-            getChosen(data);
+            //trackFirebase();
+            //getChosen(data);
         }
-        
+
     }
 }
 
 function incrementSeconds() {
     seconds += 1;
-    console.log(seconds);
+    //console.log(seconds);
     if(seconds == 2){
         FB.deleteFromFirebase("MUN/songs", "chosen");
         FB.deleteFromFirebase("MUN/songs", chosen_key);
+        FB.trackFirebase();
+
         hello.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
         hello.style.color = "black";
         chosen_text.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
         chosen_text.style.color = "black";
         clearInterval(cancel);
+        seconds = 0;
     }
 }
 
@@ -105,16 +108,17 @@ function incrementSeconds() {
 
 /// GET CHOSEN WORD
 function getChosen(reaction,data, key){
-    if(reaction == "added"){
+    if(reaction == "added" || reaction == "deleted"){
         console.log(data);
         if(key == "key"){chosen_key = data;}
         if (key == "song"){chosen_song = data;}
         if (key == "lang"){chosen_lang = data;}
         //get lang & song
-        if((chosen_key!=undefined) && (chosen_song!=undefined)){
+        if((chosen_key!=undefined) && (chosen_song!=undefined) && reaction == "added"){
             //show translation of song
             LANG.translate(chosen_song, chosen_lang)
             .then(translatedText => {
+                console.log(translatedText);
                 chosen_text.innerHTML = translatedText;
             })
             
@@ -204,7 +208,7 @@ function initHTML() {
                 hello.innerHTML = translatedText;
                 //add translated to firebase
                 const data = { 
-                    type: "objects", 
+                    type: "pins", 
                     position: { x: pos.x, y: pos.y, z: pos.z }, 
                     lang: new_lang,
                     pic: user_pic
