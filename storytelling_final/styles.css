@@ -1,0 +1,18 @@
+html {
+    background-color: black;
+}
+body {
+    background-image: linear-gradient(to bottom, rgba(255,0,0,0) 0% 80%, rgba(255,0,0,1));
+}
+
+#story {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#id {
+    color: white;
+    position: absolute;
+    z-index: 100;
+}
