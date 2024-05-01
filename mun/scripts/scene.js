@@ -146,7 +146,7 @@ function init3D() {
     let bgGeometery = new THREE.SphereGeometry(1000, 60, 40);
     bgGeometery.scale(-1, 1, 1);
     //pic
-    let panotexture = new THREE.TextureLoader().load("../map.png");
+    let panotexture = new THREE.TextureLoader().load("./map.png");
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
