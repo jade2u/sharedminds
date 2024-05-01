@@ -238,7 +238,6 @@ function draw() {
 
 /* --- NEW LINE --- */
 function new_line(part, line) {
-  console.log(intro.text);
   if(line<=6){
     switch(line) {
       case 0:
