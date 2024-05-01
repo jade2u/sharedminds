@@ -93,7 +93,7 @@ function incrementSeconds() {
     if(seconds == 2){
         FB.deleteFromFirebase("MUN/songs", "chosen");
         FB.deleteFromFirebase("MUN/songs", chosen_key);
-        FB.trackFirebase();
+        FB.trackFirebase(chosen_text);
 
         hello.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
         hello.style.color = "black";
