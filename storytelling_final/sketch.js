@@ -35,7 +35,7 @@ var time = {
     //console.log(this.now);
     //make text
     if(this.now == times[line_counter]){
-      new_line(pics, line_counter, 2 + this.now/5);
+      new_line(pics, line_counter);
       line_counter++;
     }
     /// EXTRAS --- extras(line, freq, limit)
@@ -71,7 +71,7 @@ var time = {
 var seconds = 0;
 var start_counter = setInterval((function(){
   seconds +=1;
-  console.log(time.now);
+  console.log(time.now)
   time.now = seconds;
 }), 1000);
 
@@ -262,7 +262,7 @@ function new_line(part, line) {
     }
   }
   else{intro.remove();}
-  let pic_width = width/2;
+  let pic_width = width/3;
   story_pic = part[line].url;
   pic_elem.setAttribute("src", story_pic);
   pic_elem.setAttribute("width", pic_width);
