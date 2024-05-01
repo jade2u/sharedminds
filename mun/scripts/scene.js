@@ -59,7 +59,7 @@ export function reactToFirebase(reaction, data, key){
             getChosen(data);
         }
         if(data.type == "pins") {
-            console.log(data.lang);
+            //console.log(data.lang);
             //win
             if(chosen_lang == data.lang){
                 console.log('win');
