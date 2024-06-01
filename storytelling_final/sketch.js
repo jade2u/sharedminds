@@ -231,6 +231,8 @@ function draw() {
   bg_left.setVolume(vol_sides);
   bg_right.setVolume(vol_sides);
   bg.setVolume(vol_bg);
+
+  if(player.y>=height){window.location.href='start.html';}
 }
 
 
@@ -333,7 +335,6 @@ function mouseWheel(event) {
 
 /* --- KEY MOVE --- */
 function move() {
-  
   /// HORIZONTAL
   //left
   if (kb.pressing('a')){
@@ -359,42 +360,3 @@ function move() {
   }
   else player.vel.y = 0;
 }
-
-
-/*
-  //whole second
-  if((world.realTime %= level_counter) < 1) {
-    //world.timeScale = 1;  //slo-mo effect
-    //@ time change
-     if((world.realTime %= level_counter) < 0.014) {
-       new_obstacle(world.realTime); //spawn
-       //inc frequency
-       if(level_counter > 2.5) level_counter = level_counter - 0.2;
-       else level_counter = 2;
-     }
-  }
-  //reset
-  else {
-    clear();
-    //world.timeScale = 1;
-  }
-  */
-  //blur
-  /*
-  if(pic !== undefined){
-    if(pic == pics[0]){
-      let every_other = floor(obstacle.y)%2;
-      if(every_other == 0){
-        
-        if(obstacle.y >= (height/2)){
-          //blur
-          pics[0].filter(BLUR, (obstacle.y/700));
-          //resize
-          pic.resize(pic.width + 1, pic.height + 1);
-        }
-
-      }
-      
-    }
-  }
-  */
