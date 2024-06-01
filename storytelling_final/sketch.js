@@ -11,80 +11,6 @@ let pics = [];
 
 const pic_elem = document.getElementById("story");
 const intro_elem = document.getElementById("intro");
-/* --- PRELOAD --- */
-function preload() {
-  /// PICS
-  player_pic = loadImage('png/perse.gif');
-  hades_pic = loadImage('png/hades.png');
-  //intro
-  let intro_1 = loadImage('png/intro/1.png');
-  let intro_2 = loadImage('png/intro/2.png');
-  let intro_3 = loadImage('png/intro/3.png');
-  let intro_4 = loadImage('png/intro/4.png');
-  let intro_5 = loadImage('png/intro/5.png');
-  let intro_6 = loadImage('png/intro/6.png');
-  //pt 1
-  let pt1_1 = loadImage('png/1/1.png');
-  let pt1_2 = loadImage('png/1/2.png');
-  let pt1_3 = loadImage('png/1/3.png');
-  let pt1_4 = loadImage('png/1/4.png');
-  //pt 2
-  let pt2_1 = loadImage('png/2/1.png');
-  let pt2_2 = loadImage('png/2/2.png');
-  let pt2_3 = loadImage('png/2/3.png');
-  let pt2_4 = loadImage('png/2/4.png');
-  let pt2_5 = loadImage('png/2/5.png');
-  //pt 3
-  let pt3_1 = loadImage('png/3/1.png');
-  let pt3_2 = loadImage('png/3/2.png');
-  let pt3_3 = loadImage('png/3/3.png');
-  let pt3_4 = loadImage('png/3/4.png');
-  //pt 4
-  let pt4_1 = loadImage('png/4/1.png');
-  let pt4_2 = loadImage('png/4/2.png');
-  let pt4_3 = loadImage('png/4/3.png');
-  //pt 5
-  let pt5_1 = loadImage('png/5/1.png');
-  let pt5_2 = loadImage('png/5/2.png');
-  let pt5_3 = loadImage('png/5/3.png');
-  //extra
-  let extra_1 = loadImage('png/extra/more.png');
-  let extra_2 = loadImage('png/extra/girl.png');
-  let extra_3 = loadImage('png/extra/forever.png');
-  let extra_4 = loadImage('png/extra/hes_there.png');
-  let extra_5 = loadImage('png/extra/me.png');
-  let extra_6 = loadImage('png/extra/special.png');
-  let extra_7 = loadImage('png/extra/harder.png');
-  let extra_8 = loadImage('png/extra/again.png');
-  let extra_9 = loadImage('png/extra/give.png');
-  //pic array
-  pics = [
-    //intro
-    intro_1, intro_2, intro_3, intro_4, intro_5, intro_6,
-    //1
-    pt1_1, pt1_2, pt1_3, pt1_4,
-    //2
-    pt2_1, pt2_2, pt2_3, pt2_4, pt2_5,
-    //3
-    pt3_1, pt3_2, pt3_3, pt3_4,
-    //4
-    pt4_1, pt4_2, pt4_3,
-    //5
-    pt5_1, pt5_2, pt5_3
-  ];
-  //extra array
-  extra = [
-    extra_1, extra_2, extra_3, extra_4, extra_5, extra_6, extra_7, extra_8, extra_9
-  ];
-
-  //sounds
-  soundFormats('wav');
-  vocals = loadSound('music/vocals_half.wav');
-  bg = loadSound('music/synths_half.wav');
-  bg_left = loadSound('music/bass_half.wav');
-  bg_right = loadSound('music/bass_half.wav');
-}
-
 
 /* --- TIME --- */
 let times = [
@@ -159,6 +85,79 @@ function extras(line, freq, limit){
   }), freq);
 }
 
+/* --- PRELOAD --- */
+function preload() {
+  /// PICS
+  player_pic = loadImage('png/perse.gif');
+  hades_pic = loadImage('png/hades.png');
+  //intro
+  let intro_1 = loadImage('png/intro/1.png');
+  let intro_2 = loadImage('png/intro/2.png');
+  let intro_3 = loadImage('png/intro/3.png');
+  let intro_4 = loadImage('png/intro/4.png');
+  let intro_5 = loadImage('png/intro/5.png');
+  let intro_6 = loadImage('png/intro/6.png');
+  //pt 1
+  let pt1_1 = loadImage('png/1/1.png');
+  let pt1_2 = loadImage('png/1/2.png');
+  let pt1_3 = loadImage('png/1/3.png');
+  let pt1_4 = loadImage('png/1/4.png');
+  //pt 2
+  let pt2_1 = loadImage('png/2/1.png');
+  let pt2_2 = loadImage('png/2/2.png');
+  let pt2_3 = loadImage('png/2/3.png');
+  let pt2_4 = loadImage('png/2/4.png');
+  let pt2_5 = loadImage('png/2/5.png');
+  //pt 3
+  let pt3_1 = loadImage('png/3/1.png');
+  let pt3_2 = loadImage('png/3/2.png');
+  let pt3_3 = loadImage('png/3/3.png');
+  let pt3_4 = loadImage('png/3/4.png');
+  //pt 4
+  let pt4_1 = loadImage('png/4/1.png');
+  let pt4_2 = loadImage('png/4/2.png');
+  let pt4_3 = loadImage('png/4/3.png');
+  //pt 5
+  let pt5_1 = loadImage('png/5/1.png');
+  let pt5_2 = loadImage('png/5/2.png');
+  let pt5_3 = loadImage('png/5/3.png');
+  //extra
+  let extra_1 = loadImage('png/extra/more.png');
+  let extra_2 = loadImage('png/extra/girl.png');
+  let extra_3 = loadImage('png/extra/forever.png');
+  let extra_4 = loadImage('png/extra/hes_there.png');
+  let extra_5 = loadImage('png/extra/me.png');
+  let extra_6 = loadImage('png/extra/special.png');
+  let extra_7 = loadImage('png/extra/harder.png');
+  let extra_8 = loadImage('png/extra/again.png');
+  let extra_9 = loadImage('png/extra/give.png');
+  //pic array
+  pics = [
+    //intro
+    intro_1, intro_2, intro_3, intro_4, intro_5, intro_6,
+    //1
+    pt1_1, pt1_2, pt1_3, pt1_4,
+    //2
+    pt2_1, pt2_2, pt2_3, pt2_4, pt2_5,
+    //3
+    pt3_1, pt3_2, pt3_3, pt3_4,
+    //4
+    pt4_1, pt4_2, pt4_3,
+    //5
+    pt5_1, pt5_2, pt5_3
+  ];
+  //extra array
+  extra = [
+    extra_1, extra_2, extra_3, extra_4, extra_5, extra_6, extra_7, extra_8, extra_9
+  ];
+
+  //sounds
+  soundFormats('wav');
+  vocals = loadSound('music/vocals_half.wav');
+  bg = loadSound('music/synths_half.wav');
+  bg_left = loadSound('music/bass_half.wav');
+  bg_right = loadSound('music/bass_half.wav');
+}
 
 /* --- SETUP --- */
 function setup() {
@@ -238,6 +237,7 @@ function draw() {
 
 /* --- NEW LINE --- */
 function new_line(part, line) {
+  console.log(intro.text);
   if(line<=6){
     switch(line) {
       case 0:
