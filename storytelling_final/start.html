@@ -3,19 +3,16 @@
   <head>
     <script src="https://cdn.jsdelivr.net/npm/p5@1/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1/lib/addons/p5.sound.min.js"></script>
-    <!-- Version 3 of p5play -->
-    <script src="https://p5play.org/v3/planck.min.js"></script>
-    <script src="https://p5play.org/v3/p5play.js"></script>
     
     <link rel="stylesheet" type="text/css" href="styles.css">
     <meta charset="utf-8" />
 
   </head>
-  <body>
-    <main>
-      <p id="intro"></p>
-      <img id="story">
-    </main>
-    <script src="sketch.js"></script>
+
+  <body id="start-page">
+    <img id="logo" src="./png/intro/logo.png">
+    <button id="start-button" onclick="location.href = './index.html'">
+        <img id="start-img" src="./png/extra/again.png">
+    </button>
   </body>
 </html>

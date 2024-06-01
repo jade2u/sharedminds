@@ -162,15 +162,23 @@ function preload() {
 /* --- SETUP --- */
 function setup() {
   new Canvas();
-  //text
   //level_counter
   level_counter = 6;
   asset_counter = 0;
   world.gravity.y = 10;
-  
-  //draw player
-  stroke(255,255,255,100);
-  strokeWeight(5);
+
+  //intro
+  strokeWeight(0);
+  intro = new Sprite();
+  intro.color = "black";
+  intro.textColor = "gray";
+  intro.textSize = 20;
+  intro.y = height/3;
+  intro.x = width/2;
+  intro.collider = "none";
+
+  //player
+  strokeWeight(0);
   player = new Sprite();
   player.img = player_pic;
   player_pic.resize(0,height/6);
@@ -180,16 +188,7 @@ function setup() {
   player.x = width/2;
   player.rotation = 0;
 
-
-  intro = new Sprite();
-  strokeWeight(0);
-  intro.color = "black";
-  intro.textColor = "gray";
-  intro.textSize = 20;
-  intro.y = height/2 -50;
-  intro.x = width/2;
-  intro.collider = "none";
-
+  //hades
   hades = new Sprite();
   hades.img = hades_pic;
   hades_pic.resize(width/3, height/6);
