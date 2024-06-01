@@ -97,3 +97,7 @@ button {
     background-color: white;
     color: hsl(150, 100%, 37%);
 }
+#start-btn:disabled{
+    background-color: gray;
+    color: white;
+}

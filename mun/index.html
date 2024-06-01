@@ -49,33 +49,29 @@
         
         <button id="start-btn" type="submit" onclick="start(event)" disabled>START</button>
     </div>
-
-    <a id="local-filesaver"></a>
     
     <div id="game">
-
         <h1 id="chosen-word"></h1>
         <img id="avi">
         <h1 id="hello"></h1>
-        
-       
     </div>
 
-    
-
     <script>
-        //document.getElementById('textbox').setAttribute('placeholder', localStorage.getItem("country") + " says...");
+
         function start(event) {
+            /*
             //show game
             document.getElementById('game').style.display = 'block';
             //hide login
             document.getElementById('login').style.display = 'none';
             //add scene script
             let scene = document.createElement('script');
-            scene.setAttribute("src", "mun/scripts/scene.js");
+            scene.setAttribute("src", "scene.js");
             scene.setAttribute("type", "module");
             document.querySelector('body').appendChild(scene);
+            */
         }
+
     </script>
     <script src="scripts/embeddings.js" type="module"></script>
     <script src="scripts/firebase.js" type="module"></script>

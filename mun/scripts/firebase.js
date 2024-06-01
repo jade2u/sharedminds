@@ -1,15 +1,17 @@
-/* --- IMPORTS --- */
+/* ----------- IMPORTS -----------*/
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+//database
 import { getDatabase, ref, off, get, child, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
-import { getAuth, setPersistence, browserSessionPersistence, signOut, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import * as EMBED from './embeddings.js';
-import {language} from './language.js';
+//authorization
+import { getAuth, setPersistence, browserSessionPersistence, onAuthStateChanged, signInWithRedirect, signInWithPopup,GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import * as EMBED from './embeddings.js'; //to ask replicate
+import {language} from './language.js'; //to get language array
 
-/* --- VARS --- */
+/* ----------- VARS -----------*/
 let db, auth, app;
 let googleAuthProvider;
 
-/* --- INIT --- */
+/* ----------- INIT -----------*/
 /// GET USER
 export function getUser() {
     return auth.currentUser;
@@ -69,18 +71,22 @@ initFirebase(function (user) {
                 console.log(credential);
             }
         );
+        
     });
     //when user authorized
     if(user){
-        //show game
-        document.getElementById('game').style.display = 'block';
-        //hide login
-        document.getElementById('login').style.display = 'none';
-        //add scene script
-        let scene = document.createElement('script');
-        scene.setAttribute("src", "scripts/scene.js");
-        scene.setAttribute("type", "module");
-        document.querySelector('body').appendChild(scene);
+        document.getElementById('start-btn').disabled = 'false';
+        document.getElementById("start-btn").addEventListener("click", function () {
+            //show game
+            document.getElementById('game').style.display = 'block';
+            //hide login
+            document.getElementById('login').style.display = 'none';
+            //add scene script
+            let scene = document.createElement('script');
+            scene.setAttribute("src", "../scripts/scene.js");
+            scene.setAttribute("type", "module");
+            document.querySelector('body').appendChild(scene);
+        });
     }
 });
 
@@ -90,22 +96,19 @@ function showStart() {
     document.getElementById('start-btn').disabled = false; 
 }
 
-/* --- CHOSEN --- */
-/// SETTING CHOSEN SONG
-export function trackFirebase(data){
+/* ----------- CHOSEN -----------*/
+export function trackSongs(){
     const dbRef = ref(getDatabase());
-    //get snapshot of chosen folder
-    get(child(dbRef, `MUN/songs`)).then((snapshot) => {
-        //if there's already 5 songs
+    get(child(dbRef, `MUN/songs`)).then((snapshot) => { //get snapshot of songs
+        //if there's >1 songs left
         if (snapshot.size > 1) {
             var chosen;
-            //get 1st song
             snapshot.forEach(function(urlSnapshot) {
+                //set 1st song as chosen
                 if (!chosen) {
                     chosen = urlSnapshot;
-                    //set as chosen
-                    //in firebase
                     setDataInFirebase("MUN/songs/chosen", { 
+                        type: 'chosen',
                         key: urlSnapshot.key,
                         lang: urlSnapshot.val().lang,
                         song: urlSnapshot.val().song
@@ -114,10 +117,9 @@ export function trackFirebase(data){
             });
             
         }
-        //if there's less than 5 songs
+        //if there's only 1 song left
         else if (snapshot.size == 1) {
-            console.log(snapshot.size);
-            //get random languages
+            //get 5 random languages
             var lang_array = language["languages"];
             let n = 5;
             let random = lang_array.sort(() => .5 - Math.random()).slice(0,n);
@@ -125,8 +127,8 @@ export function trackFirebase(data){
             //get songs
             EMBED.askForWords() 
             .then(reply_arr => {
-                //add them to firebase    
-                for(var i=0; i<reply_arr.length; i++){
+                //add 5 songs to firebase  
+                for(var i=0; i<=5; i++){
                     addNewThingToFirebase("MUN/songs", {
                         type: "song",
                         song: reply_arr[i],
@@ -138,13 +140,10 @@ export function trackFirebase(data){
     }).catch((error) => { console.error(error);});
 }
 
-
   
-/* --- CHANGES --- */
+/* ----------- CHANGES -----------*/
 /// ADD
 export function addNewThingToFirebase(folder, data) {
-    //if new thing added is a song
-    //if(folder == "MUN/songs"){trackFirebase(data);} //see if should be set as chosen song
     const dbRef = ref(db, folder);
     const newKey = push(dbRef, data).key;
     return newKey; //useful for later updating
@@ -152,7 +151,6 @@ export function addNewThingToFirebase(folder, data) {
 /// DELETE
 export function deleteFromFirebase(folder, key) {
     console.log("deleting", folder + '/' + key);
-    if(key == "chosen"){}
     const dbRef = ref(db, folder + '/' + key);
     set(dbRef, null);
 }
@@ -160,7 +158,6 @@ export function deleteFromFirebase(folder, key) {
 export function setDataInFirebase(dbPath, data) {
     const dbRef = ref(db, dbPath); //if it doesn't exist, it adds (pushes) with you providing the key
     set(dbRef, data); //if it does exist, it overwrites
-    
 }
 /// UPDATE
 export function updateJSONFieldInFirebase(folder, key, data) {
@@ -174,15 +171,15 @@ export function subscribeToData(folder, callback) {
     const commentsRef = ref(db, folder + '/');
     onChildAdded(commentsRef, (data) => {
         callback("added", data.val(), data.key);
-        //reactToFirebase("added", data.val(), data.key);
+        reactToFirebase("added", data.val(), data.key);
     });
     onChildChanged(commentsRef, (data) => {
         callback("changed", data.val(), data.key);
-        //reactToFirebase("changed", data.val(), data.key)
+        reactToFirebase("changed", data.val(), data.key)
     });
     onChildRemoved(commentsRef, (data) => {
         callback("removed", data.val(), data.key);
-        //reactToFirebase("removed", data.val(), data.key)
+        reactToFirebase("removed", data.val(), data.key)
     });
 }
 export function unSubscribeToData(folder) {
@@ -190,5 +187,6 @@ export function unSubscribeToData(folder) {
     console.log("unsubscribing from", folder, oldRef);
     off(oldRef);
 }
+
 
 

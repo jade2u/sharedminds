@@ -128,7 +128,7 @@ div#playlist {
     margin: auto;
     padding: 1em;
     width: fit-content;
-    max-width: 80vw;
+    min-width: 70vw;
     height: fit-content;
     min-height: 30vw;
     overflow: auto;

@@ -66,20 +66,6 @@ function renderOthers() {
     }
 }
 
-function cosineSimilarity(a, b) {
-    let dotProduct = 0;
-    let magnitudeA = 0;
-    let magnitudeB = 0;
-    for (let i = 0; i < a.length; i++) {
-        dotProduct += (a[i] * b[i]);
-        magnitudeA += (a[i] * a[i]);
-        magnitudeB += (b[i] * b[i]);
-    }
-    magnitudeA = Math.sqrt(magnitudeA);
-    magnitudeB = Math.sqrt(magnitudeB);
-    return dotProduct / (magnitudeA * magnitudeB);
-}
-
 let inputField = document.getElementById("inputText");
 inputField.addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
@@ -113,7 +99,7 @@ async function askForEmbedding(prompt, base64) {
     const raw_response = await fetch(url, options);
     //turn it into json
     const replicateJSON = await raw_response.json();
-    document.body.style.cursor = "auto";
+    document.body.style.cursor = "wait";
 
     console.log("replicateJSON", replicateJSON);
     if (replicateJSON.output.length == 0) {
@@ -139,7 +125,7 @@ async function askForWords(prompt) {
     //console.log("Asking for Words", data);
     feedback.innerHTML = "Getting the name ...";
     let url = replicateProxy + "/create_n_get/";
-    document.body.style.cursor = "progress";
+    document.body.style.cursor = "wait";
     console.log("Making a Fetch Request", data);
     const options = {
         method: "POST",
@@ -178,7 +164,7 @@ async function askForPicture(prompt) {
     };
     feedback.innerHTML = "Getting what it looks like ...";
     let url = replicateProxy + "/create_n_get/";
-    document.body.style.cursor = "progress";
+    document.body.style.cursor = "wait";
     console.log("Making a Fetch Request", data);
     const options = {
         method: "POST",
@@ -191,7 +177,7 @@ async function askForPicture(prompt) {
     const raw_response = await fetch(url, options);
     //turn it into json
     const replicateJSON = await raw_response.json();
-    document.body.style.cursor = "auto";
+    document.body.style.cursor = "wait";
 
     console.log("replicateJSON", replicateJSON);
     if (replicateJSON.output.length == 0) {
@@ -222,6 +208,7 @@ async function askForPicture(prompt) {
 function showCard(){
     const result = document.querySelector('#localUser');
     result.style.visibility = "visible";
+    document.body.style.cursor = "unset";
 
     const playlist = document.querySelector('#playlist');
     playlist.style.visibility = "visible";
