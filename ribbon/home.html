@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spotify Implicit Grant Template</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link href="home.css" rel="stylesheet"/>
+    <link href="home-queries.css" rel="stylesheet"/>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.min.js"></script>
+  </head>
+
+  <body>
+    <!-- BUTTONS -->
+    <nav id="buttons">
+      <!-- time -->
+      <div class="time">
+        <h3>time</h3>
+        <button id="short">Last Month</button>
+        <button id="medium">Last 6 Months</button>
+        <button id="long">All Time</button>
+      </div>
+      <!-- data type -->
+      <div class="data">
+        <h3>category</h3>
+        <button id="artists">Artists</button>
+        <button id="tracks">Tracks</button>
+        <button id="genres">Genres</button>
+      </div>
+    </nav>
+
+    <div id="container">
+      <div id="title-cards-container">
+        <button id="prev-card" class="carousel-nav">&lt;</button>
+        <section id="head-card">
+          <div class="headings">
+            <h1> </h1>
+            <h2 style="font-size: 1.2em; text-transform: capitalize;">
+              Select Your <br> 
+              <em style="font-weight: 600; color: #FFB5C2;">Time & Category</em>
+            </h2>
+          </div>
+          <ol>
+          </ol>
+        </section>
+        <div id="title-cards">
+          <section class="title-card">
+            <h1>Title</h1>
+          </section>
+          <section class="title-card">
+            <h1>Title</h1>
+          </section>
+          <section class="title-card">
+            <h1>Title</h1>
+          </section>
+        </div>
+        <button id="next-card" class="carousel-nav">&gt;</button>
+      </div>
+    </div>
+    
+
+    <!-- SCRIPTS -->
+    <script src="scripts/button.js"></script>
+    <!-- <script src="scripts/spotify.js"></script> -->
+    <!-- <script src="scripts/card.js"></script> -->
+    <script src="scripts/color.js"></script>
+    <script src="scripts/changeStyle.js"></script>
+    <script src="scripts/carousel.js"></script>
+
+
+  </body>
+</html>
